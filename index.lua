@@ -1,9 +1,23 @@
-local DURAP_HOME = ngx.var.DURAP_HOME
---ngx.say('hello, world')
+function set_app()
+    if not _G.DURAP_HOME then
+        _G.DURAP_HOME = ngx.var.DURAP_HOME
+        package.path = _G.DURAP_HOME .. "/?.lua;" .. package.path
 
---ngx.say(DURAP_HOME)
---ngx.say(package.path)
+        local core = require "core.core"
+        core.set_app()
+    end
+end
 
+set_app()
+
+---[[
+ngx.say('hello, world')
+ngx.say(DURAP_HOME)
+ngx.say(package.path)
+--]]
+
+
+--[[
 local g = _G
 setfenv(1, g)
 ngx.say(package.path)
@@ -12,7 +26,6 @@ package.path = ngx.var.DURAP_HOME .. "/system/core/?.lua;" .. package.path
 ngx.say(package.path)
 
 
---[[
 local mysql = require "resty.mysql"
 local db = mysql:new()
 
