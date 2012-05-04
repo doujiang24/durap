@@ -4,7 +4,6 @@ module("config", package.seeall)
 
 -- require path, eg: resty mysql.
 require_path = {
-    "/opt/openresty/lualib/?.lua"
 }
 
 -- mysql conf

@@ -9,11 +9,14 @@ local config = require "config"
 
 -- set package.path
 local function _set_path()
-    if config.require_path then
+    if config.require_path and #config.require_path > 0 then
         package.path = concat(config.require_path, ";") .. ";" .. package.path
     end
 end
 
 function set_app()
-    _set_path()
+    if not _G.DURAP_HOME then
+        _G.DURAP_HOME = ngx.var.DURAP_HOME
+        _set_path()
+    end
 end

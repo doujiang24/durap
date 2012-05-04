@@ -1,14 +1,5 @@
-function set_app()
-    if not _G.DURAP_HOME then
-        _G.DURAP_HOME = ngx.var.DURAP_HOME
-        package.path = _G.DURAP_HOME .. "/?.lua;" .. package.path
-
-        local core = require "core.core"
-        core.set_app()
-    end
-end
-
-set_app()
+local core = require "core.core"
+core.set_app()
 
 ---[[
 ngx.say('hello, world')
