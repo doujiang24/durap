@@ -1,7 +1,17 @@
 local core = require "core.core"
 core.set_app()
 
----[[
+local controller = require("core.controller")
+--[[
+controller.run()
+--]]
+
+ngx.say(ngx.var.REQUEST_URI)
+url = ngx.var.REQUEST_URI
+for v in string.gmatch(url, "/([^/?]+)") do print(v) end
+
+
+--[[
 ngx.say('hello, world')
 ngx.say(DURAP_HOME)
 ngx.say(package.path)
