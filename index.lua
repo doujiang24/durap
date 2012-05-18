@@ -6,9 +6,6 @@ local controller = require("core.controller")
 controller.run()
 --]]
 
-ngx.say(ngx.var.REQUEST_URI)
-url = ngx.var.REQUEST_URI
-for v in string.gmatch(url, "/([^/?]+)") do print(v) end
 
 
 --[[
