@@ -6,6 +6,7 @@ module("core.core", package.seeall)
 local concat = table.concat
 
 local config = require "config"
+local mysql = require "core.mysql"
 
 -- set package.path
 local function _set_path()
@@ -19,4 +20,9 @@ function set_app()
         _G.DURAP_HOME = ngx.var.DURAP_HOME
         _set_path()
     end
+    _init_mysql()
+end
+
+function _init_mysql()
+    mysql.init()
 end

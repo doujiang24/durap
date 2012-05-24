@@ -1,53 +1,58 @@
----[[
-ngx.say(config)
-ngx.exit(200)
-local core = require "core.core"
-core.set_app()
+-- Copyright
 
-local controller = require "core.controller"
-
-ngx.say(mysql)
---mysql.select()
---mysql.close()
-ngx.say(#config.require_path)
---ngx.say(config)
-
---[[
-controller.run()
---]]
-
-
-
---[[
-ngx.say('hello, world')
-ngx.say(DURAP_HOME)
-ngx.say(package.path)
---]]
-
-
---[[
-local g = _G
-setfenv(1, g)
-ngx.say(package.path)
-ngx.say("<br><br>")
-package.path = ngx.var.DURAP_HOME .. "/system/core/?.lua;" .. package.path
-ngx.say(package.path)
-
+module("core.mysql", package.seeall)
 
 local mysql = require "resty.mysql"
-local db = mysql:new()
+local db
 
-db:set_timeout(1000) -- 1 sec
+function init()
+    db = mysql:new()
+    db:set_timeout(1000) -- 1 sec
+    local ok, err, errno, sqlstate = db:connect {
+        host = "127.0.0.1",
+        port = 3306,
+        database = "ngx_test",
+        user = "root",
+        password = "",
+        max_packet_size = 1024 * 1024
+    }
+    if not ok then
+        ngx.say("failed to connect: ", err, ": ", errno, " ", sqlstate)
+        ngx.exit(500)
+    end
+end
 
-local ok, err, errno, sqlstate = db:connect {
-    host = "127.0.0.1",
-    port = 3306,
-    database = "ngx_test",
-    user = "root",
-    password = "",
-    max_packet_size = 1024 * 1024
-}
+function select()
+    res, err, errno, sqlstate =
+    db:query("select * from cats order by id asc")
+    if not res then
+        ngx.say("bad result: ", err, ": ", errno, ": ", sqlstate, ".")
+        return
+    end
 
+    local cjson = require "cjson"
+    ngx.say("result: ", cjson.encode(res))
+end
+
+function close()
+    local ok, err = db:set_keepalive(0, 100)
+    if not ok then
+        ngx.say("failed to set keepalive: ", err)
+        return
+    end
+end
+
+-- or connect to a unix domain socket file listened
+-- by a mysql server:
+--     local ok, err, errno, sqlstate =
+--           db:connect{
+--              path = "unix:/path/to/mysql.sock",
+--              database = "ngx_test",
+--              user = "ngx_test",
+--              password = "ngx_test" }
+
+
+--[[
 if not ok then
     ngx.say("failed to connect: ", err, ": ", errno, " ", sqlstate)
     return
@@ -94,14 +99,10 @@ end
 local cjson = require "cjson"
 ngx.say("result: ", cjson.encode(res))
 
+--]]
+
 -- put it into the connection pool of size 100,
 -- with 0 idle timeout
-local ok, err = db:set_keepalive(60 * 1000, 100)
-if not ok then
-    ngx.say("failed to set keepalive: ", err)
-    return
-end
---]]
 
 -- or just close the connection right away:
 -- local ok, err = db:close()
