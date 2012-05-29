@@ -1,15 +1,14 @@
 ---[[
-ngx.say(config)
-ngx.exit(200)
+
 local core = require "core.core"
 core.set_app()
 
 local controller = require "core.controller"
 
-ngx.say(mysql)
+--ngx.say(mysql)
 --mysql.select()
 --mysql.close()
-ngx.say(#config.require_path)
+--ngx.say(#config.require_path)
 --ngx.say(config)
 
 --[[

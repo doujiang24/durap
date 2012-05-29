@@ -6,6 +6,12 @@ module("config", package.seeall)
 require_path = {
 }
 
+-- common module
+common_module = {
+    'utils.array',
+    'utils.file'
+}
+
 -- mysql conf
 mysql = {
     host = "127.0.0.1",

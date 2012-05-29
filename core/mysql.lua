@@ -2,6 +2,7 @@
 
 module("core.mysql", package.seeall)
 
+-- global variables
 local mysql = require "resty.mysql"
 local db
 
