@@ -6,4 +6,3 @@ module("app.pricelog", package.seeall)
 local foo = core.foo
 
 ngx.say(foo)
-ngx.say(#core.core.foo)

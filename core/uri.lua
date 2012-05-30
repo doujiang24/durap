@@ -30,6 +30,6 @@ function get_module()
     if file_exists("app/" .. mod .. ".lua") then
         return mod
     else
-        return "notfound"
+        return "index"
     end
 end
