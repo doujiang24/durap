@@ -6,6 +6,8 @@ module("utils.file", package.seeall)
 local open = io.open
 local close = io.close
 
+name = "foo"
+
 function file_exists(filename)
     file = DURAP_HOME .. "/" .. filename
     --ngx.say(file)

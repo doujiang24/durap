@@ -2,12 +2,15 @@
 
 module("core.controller", package.seeall)
 
-local uri = require("core.uri")
+local uri = require "core.uri"
+ngx.say(#utils.array.name)
 
 --ngx.say(utils.array.name)
---local mod_name = uri.get_module()
+local mod_name = uri.get_module()
 
---ngx.say(mod_name)
+ngx.say(mod_name)
+
+local ctr = require("app." .. mod_name)
 
 --local mod = require(mod_name)
 --ngx.say(mod)

@@ -1,5 +1,22 @@
 ---[[
 
+--[[
+local core = require "core.core"
+ngx.say(#config.common_utils)
+ngx.say(#utils.array.name)
+--]]
+
+--[==[
+
+for k, v in ipairs(config) do
+    if type(k) == "string" then
+        ngx.say(k)
+    end
+end
+ngx.exit(200)
+--]==]
+
+
 local core = require "core.core"
 core.set_app()
 
@@ -9,6 +26,7 @@ local controller = require "core.controller"
 --mysql.select()
 --mysql.close()
 --ngx.say(#config.require_path)
+--ngx.say(config.name)
 --ngx.say(config)
 
 --[[
@@ -108,3 +126,4 @@ end
 --     ngx.say("failed to close: ", err)
 --     return
 -- end
+--]==]

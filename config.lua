@@ -2,14 +2,16 @@
 
 module("config", package.seeall)
 
+local DURAP_HOME = DURAP_HOME
+
 -- require path, eg: resty mysql.
 require_path = {
 }
 
 -- common module
-common_module = {
-    'utils.array',
-    'utils.file'
+common_utils = {
+    'array',
+    'file'
 }
 
 -- mysql conf

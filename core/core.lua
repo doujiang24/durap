@@ -5,8 +5,10 @@ module("core.core", package.seeall)
 -- global variables
 local concat = table.concat
 
-local config = require "config"
-local mysql = require "core.mysql"
+---[==[
+mysql = require "core.mysql"
+
+foo = "fooname"
 
 -- set package.path
 local function _set_path()
@@ -15,10 +17,11 @@ local function _set_path()
     end
 end
 
-local function _load_common_module()
-    if config.common_module and #config.common_module > 0 then
-        for k, mod in pairs(config.common_module) do
-            _G[mod] = require(mod)
+local function _load_common_utils()
+    _G["utils"] = {}
+    if config.common_utils and #config.common_utils > 0 then
+        for k, mod in pairs(config.common_utils) do
+            _G["utils"][mod] = require("utils." .. mod)
             --ngx.say(mod)
         end
     end
@@ -32,15 +35,14 @@ end
 
 function set_app()
     if not _G.DURAP_HOME then
+        _G.config = require "config"
         _G.DURAP_HOME = ngx.var.DURAP_HOME
-        mod = "utils.array"
-        _G.utils = {}
-        _G.utils.array = require(mod)
-    ngx.say(utils.array.name)
         _set_path()
-        _load_common_module()
+        _load_common_utils()
     end
     --ngx.say(utils.array.name)
-    ngx.say(DURAP_HOME)
+    --ngx.say(DURAP_HOME)
     _init_mysql()
 end
+
+--]==]

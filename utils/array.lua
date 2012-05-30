@@ -4,5 +4,5 @@ module("utils.array", package.seeall)
 
 name = "foo"
 
-function elments(keys, arr, default)
+function elements(keys, arr, default)
 end
