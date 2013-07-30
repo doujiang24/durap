@@ -13,7 +13,6 @@ local setfenv = setfenv
 local concat = table.concat
 
 local _G = _G
-local r_G = _G
 
 -- debug
 local ngx = ngx
@@ -28,28 +27,25 @@ local mt = { __index = _M }
 
 
 function new(self, appname, apppath)
-    local rmt = getmetatable(r_G)
-    if rmt then
-        r_G = rawget(rmt, "__index")
-    end
-
     local res = {
         appname = appname,
         apppath = apppath,
-        r_G = r_G
     }
     return setmetatable(res, mt)
 end
 
 local function _get_cache(self, module)
     local appname = self.appname
-    local cache_module = self.r_G.cache_module
+    local cache_module = _G.cache_module
+    if cache_module[appname] and cache_module[appname][module] then
+        ngx.say('load cache module: ', module)
+    end
     return cache_module[appname] and cache_module[appname][module]
 end
 
 local function _set_cache(self, name, val)
     local appname = self.appname
-    local cache_module = self.r_G.cache_module
+    local cache_module = _G.cache_module
     if not cache_module[appname] then
         cache_module[appname] = {}
     end

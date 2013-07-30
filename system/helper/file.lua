@@ -6,12 +6,13 @@ local insert = table.insert
 
 local setmetatable = setmetatable
 local error = error
+local io_open = io.open
 
 module(...)
 
 
 function exists(f)
-    local fh, err = io.open(f)
+    local fh, err = io_open(f)
     if fh then
         fh:close()
         return true

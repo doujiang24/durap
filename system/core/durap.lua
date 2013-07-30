@@ -1,45 +1,45 @@
 -- Copyright (C) 2013 MaMa
 
+local ngx = ngx -- only for ngx.ctx
 local ngx_var = ngx.var
-local ngx_ctx = ngx.ctx
 
 local request = require "core.request"
+local loader = require "core.loader"
 
-local r_G = _G
+local _G = _G
 local getmetatable = getmetatable
 local setmetatable = setmetatable
-local rawget = rawget
 
-
-local say = ngx.say
-local type = type
 
 module(...)
 
 local mt = { __index = _M }
 
 function get_instance()
-    return ngx_ctx.dp
+    return ngx.ctx.dp
 end
 
 local function _allover_init()
-    local rmt = getmetatable(r_G)
-    if rmt then
-        r_G = rawget(rmt, "__index")
+    if not _G.get_instance then
+        _G.get_instance = get_instance
     end
 
-    if not r_G.get_instance then
-        r_G.get_instance = get_instance
+    if not _G.cache_module then
+        _G.cache_module = {}
     end
 end
 
 function init(self)
     _allover_init()
 
+    local APPNAME = ngx_var.APPNAME
+    local APPPATH = ngx_var.ROOT .. ngx_var.APPNAME .. "/"
+
     return setmetatable({
-        APPNAME = ngx_var.APPNAME,
-        APPPATH = ngx.var.ROOT .. ngx.var.APPNAME .. "/",
-        request = request:new()
+        APPNAME = APPNAME,
+        APPPATH = APPPATH,
+        request = request:new(),
+        loader = loader:new(APPNAME, APPPATH)
     }, mt)
 end
 
