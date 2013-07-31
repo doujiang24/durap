@@ -5,6 +5,7 @@ local ngx_var = ngx.var
 
 local request = require "core.request"
 local loader = require "core.loader"
+local debug = require "core.debug"
 
 local _G = _G
 local getmetatable = getmetatable
@@ -29,17 +30,20 @@ local function _allover_init()
     end
 end
 
-function init(self)
+function init(self, level)
     _allover_init()
 
     local APPNAME = ngx_var.APPNAME
     local APPPATH = ngx_var.ROOT .. ngx_var.APPNAME .. "/"
+    local req = request:new()
+    local dbg = debug:init(level, req, APPPATH)
 
-    return setmetatable({
+    ngx.ctx.dp = setmetatable({
         APPNAME = APPNAME,
         APPPATH = APPPATH,
-        request = request:new(),
-        loader = loader:new(APPNAME, APPPATH)
+        request = req,
+        loader = loader:new(APPNAME, APPPATH),
+        debug = dbg
     }, mt)
 end
 

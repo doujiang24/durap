@@ -12,11 +12,9 @@ local pairs = pairs
 local strip = strhelper.strip
 local lower = string.lower
 local str_find = string.find
-
--- debug
-local ngx = ngx
 local type = type
-local cjson = require "cjson"
+
+local get_instance = get_instance
 
 module(...)
 
@@ -149,8 +147,11 @@ local function _reset_vars(self)
 end
 -- end local functions
 
+
+-- useful functions
 function connect(self, config)
-    local mysql = setmetatable({ conn = mysql:new(), config = config }, mt)
+    local debug = get_instance().debug
+    local mysql = setmetatable({ conn = mysql:new(), config = config, debug = debug }, mt)
 
     local conn = mysql.conn
 
@@ -166,8 +167,7 @@ function connect(self, config)
     })
 
     if not ok then
-        -- logger:log(logger.ERR, "failed to connect: ", err, ": ", errno, " ", sqlstate)
-        ngx.log(ngx.ERR, "failed to connect: ", err, ": ", errno, " ", sqlstate)
+        debug:log(debug.ERR, "failed to connect: ", err, ": ", errno, " ", sqlstate)
         return
     end
 
@@ -267,19 +267,19 @@ function truncate(self, table)
 end
 
 function query(self, sql)
-    local conn = self.conn
-    ngx.say(sql)
-    ngx.say("<br>")
+    local conn, debug = self.conn, self.debug
+    debug:log(debug.DEBUG, "log sql:", sql)
 
     local res, err, errno, sqlstate = conn:query(sql)
     if not res then
-        -- logger:log(logger.ERR, "bad result: ", err, ": ", errno, ": ", sqlstate, ": sql:", sql, ": ", ".")
-        ngx.log(ngx.ERR, "bad result: ", err, ": ", errno, ": ", sqlstate, ": sql:", sql, ": ", ".")
+        debug:log(debug.ERR, "bad result: ", err, ": ", errno, ": ", sqlstate, ": sql:", sql, ": ", ".")
         return nil
     end
 
     return res
 end
+-- end useful functions
+
 
 -- where functions
 function where(self, key, value, escape)
@@ -387,11 +387,11 @@ function order_by(self, key, order)
 end
 
 function keepalive(self)
-    local conn = self.conn
+    local conn, debug = self.conn, self.debug
     local max_keepalive = self.config.max_keepalive
     local ok, err = conn:set_keepalive(0, max_keepalive)
         if not ok then
-            -- logger:log(logger.ERR, "failed to set redis keepalive: ", err)
+            debug:log(debug.ERR, "failed to set redis keepalive: ", err)
         return
     end
 end

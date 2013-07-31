@@ -14,9 +14,6 @@ local concat = table.concat
 
 local _G = _G
 
--- debug
-local ngx = ngx
-local type = type
 
 module(...)
 
@@ -26,19 +23,20 @@ _VERSION = '0.01'
 local mt = { __index = _M }
 
 
-function new(self, appname, apppath)
+function new(self, appname, apppath, debug)
     local res = {
         appname = appname,
         apppath = apppath,
+        debug = debug
     }
     return setmetatable(res, mt)
 end
 
 local function _get_cache(self, module)
-    local appname = self.appname
+    local appname, debug = self.appname, self.debug
     local cache_module = _G.cache_module
     if cache_module[appname] and cache_module[appname][module] then
-        ngx.say('load cache module: ', module)
+        debug:log(debug.DEBUG, 'load cache module: ', module)
     end
     return cache_module[appname] and cache_module[appname][module]
 end

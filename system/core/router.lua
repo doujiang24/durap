@@ -8,10 +8,8 @@ local setmetatable = setmetatable
 local error = error
 local concat = table.concat
 local remove = table.remove
-
---- debug
-local ngx = ngx
 local type = type
+
 
 module(...)
 
@@ -24,42 +22,44 @@ end
 
 function new(self)
     local dp = get_instance()
-    local uri = dp.request.uri
 
     return setmetatable({
         loader = dp.loader,
         apppath = dp.APPPATH,
-        uri = uri,
+        debug = dp.debug,
+        uri = dp.request.uri,
         segments = nil
     }, mt)
 end
 
-function set_router(self)
+function route(self)
     _fetch_uri_string(self)
-    local segments = self.segments
-    local loader = self.loader
+    local loader, segments, debug = self.loader, self.segments, self.debug
 
     if #segments > 0 then
         local ctr = loader:controller(segments[1])
         if ctr then
             local func = segments[2]
-            remove(segments, 2)
-            remove(segments, 1)
-            return ctr, func, segments
-
+            if func and type(ctr[func]) == "function" then
+                remove(segments, 2)
+                remove(segments, 1)
+                return ctr, func, segments
+            end
         else
             local ctr = loader:controller(concat({segments[1], "/", segments[2]}))
-            local func = segments[3]
-            remove(segments, 3)
-            remove(segments, 2)
-            remove(segments, 1)
-            return ctr, func, segments
-
+            if ctr then
+                local func = segments[3]
+                if func and type(ctr[func]) == "function" then
+                    remove(segments, 3)
+                    remove(segments, 2)
+                    remove(segments, 1)
+                    return ctr, func, segments
+                end
+            end
         end
-    else
-        -- dp.log()
-        return nil
     end
+    debug:log(debug.ERR, "router failed")
+    return nil
 end
 
 local class_mt = {
@@ -70,3 +70,4 @@ local class_mt = {
 }
 
 setmetatable(_M, class_mt)
+
