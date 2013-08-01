@@ -39,6 +39,27 @@ function database()
     end
 end
 
+function redis(name)
+    local Mredis = loader:model('redis')
+    local redis = Mredis:new()
+
+    local res = redis:add(name)
+    if res then
+        ngx.say('add success')
+    end
+
+    local res = redis:get()
+    if res then
+        ngx.say('get success')
+    end
+
+    redis:keepalive()
+
+    if res == name then
+        ngx.say('get match the add')
+    end
+end
+
 local class_mt = {
     -- to prevent use of casual module global variables
     __newindex = function (table, key, val)

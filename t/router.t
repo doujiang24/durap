@@ -74,7 +74,7 @@ GET /t
 [error]
 
 
-=== TEST 1: test mysql
+=== TEST 2: test mysql
 --- http_config eval: $::HttpConfig
 --- config
     location /t {
@@ -108,6 +108,44 @@ GET /t
 'table welcome created.
 new one added.
 count num match list count.' . "\n"
+--- no_error_log
+[error]
+
+
+=== TEST 3: test mysql
+--- http_config eval: $::HttpConfig
+--- config
+    location /t {
+        set $router_uri "/welcome/redis/dou";
+        set $APPNAME "demo1";
+        set $ROOT $TEST_NGINX_ROOT_PATH;
+
+        content_by_lua '
+            local debug = require "core.debug"
+            local durap = require "core.durap"
+
+            local dp = durap:init(debug.DEBUG)
+
+            debug = dp.debug
+
+            local router = require "core.router"
+            local rt = router:new()
+
+            local ctr, func, args = rt:route()
+
+            if not ctr then
+                ngx.exit(404)
+            end
+
+            ctr[func](unpack(args));
+        ';
+    }
+--- request
+GET /t
+--- response_body eval
+'add success
+get success
+get match the add' . "\n"
 --- no_error_log
 [error]
 
