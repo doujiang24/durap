@@ -12,8 +12,10 @@ local rt = router:new()
 
 local ctr, func, args = rt:route()
 
+ngx.say(type(ctr))
 if not ctr then
     ngx.exit(404)
 end
 
 ctr[func](unpack(args));
+

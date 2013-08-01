@@ -35,7 +35,7 @@ function new(self, config)
         host             = ngx_var.host,
         hostname         = ngx_var.hostname,
         request_uri      = ngx_var.request_uri,
-        uri              = ngx_var.uri,
+        uri              = ngx_var.router_uri,
         request_filename = ngx_var.request_filename,
         query_string     = ngx_var.query_string,
         user_agent       = ngx_var.http_user_agent,

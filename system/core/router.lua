@@ -9,6 +9,7 @@ local error = error
 local concat = table.concat
 local remove = table.remove
 local type = type
+local unpack = unpack
 
 
 module(...)
@@ -58,7 +59,7 @@ function route(self)
             end
         end
     end
-    debug:log(debug.ERR, "router failed")
+    debug:log(debug.ERR, "router failed", unpack(segments))
     return nil
 end
 
