@@ -58,7 +58,6 @@ local function _load_module(self, name)
         if file.exists(filename) then
             module = setmetatable({}, { __index = _G })
             assert(pcall(setfenv(assert(loadfile(filename)), module)))
-            setmetatable(module, nil)
         end
         _set_cache(self, name, module)
         return module

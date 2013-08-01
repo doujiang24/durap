@@ -8,8 +8,9 @@ local ngx = ngx
 local type = type
 local setmetatable = setmetatable
 local tonumber = tonumber
+local error = error
 
-local require = require
+local _M = getfenv()
 
 function hello(name)
     ngx.say('say hello, ', name, ".")
@@ -37,3 +38,13 @@ function database()
         ngx.say('count num match list count.')
     end
 end
+
+local class_mt = {
+    -- to prevent use of casual module global variables
+    __newindex = function (table, key, val)
+        error('attempt to write to undeclared variable "' .. key .. '"')
+    end
+}
+
+setmetatable(_M, class_mt)
+

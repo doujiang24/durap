@@ -106,6 +106,13 @@ local function _like(self, key, match, boolean_in, mod)
     return self
 end
 
+local function _having(self, condition, mod)
+    local ar_having = self.ar_having
+
+    insert(ar_having, ((#ar_having >= 1) and mod or "") .. " " .. condition)
+    return self
+end
+
 local function _select_func(self, key, alias, func)
     local ar_select = self.ar_select
     local where_arr = {
@@ -358,6 +365,22 @@ function select_count(self, key, alias)
     return _select_func(self, key, alias, "COUNT")
 end
 -- end select function
+
+
+-- group by function
+function group_by(self, key)
+    self.ar_group_by = key
+    return self
+end
+
+function having(self, condition)
+    return _having(self, condition, "AND")
+end
+
+function or_having(self, condition)
+    return _having(self, condition, "OR")
+end
+-- end group by function
 
 function limit(self, limit, offset)
     self.ar_limit = limit
