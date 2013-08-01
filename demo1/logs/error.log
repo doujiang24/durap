@@ -1,15 +1,1 @@
 
-2013-07-31 15:34:34, [ERR], ...e/dou/work/svn/nginx_module/durap/system/core/router.lua:61, called by function:route, router failed, request: /welcome/datab, host: dou.com
-2013-07-31 15:34:41, [DEBUG], ...ou/work/svn/nginx_module/durap/system/database/mysql.lua:271, called by function:query, log sql:, insert into `welcome` (`name`, `dateline`) values ('dou', '2013-07-31 15:34:41'), request: /welcome/database, host: dou.com
-2013-07-31 15:34:41, [DEBUG], ...ou/work/svn/nginx_module/durap/system/database/mysql.lua:271, called by function:query, log sql:, select count(*) as num from `welcome, request: /welcome/database, host: dou.com
-2013-07-31 15:34:41, [DEBUG], ...ou/work/svn/nginx_module/durap/system/database/mysql.lua:271, called by function:list, log sql:, SELECT `name` FROM `welcome`  WHERE `name` = 'dou' ORDER BY `dateline` DESC LIMIT 2, 10, request: /welcome/database, host: dou.com
-2013-07-31 16:48:08, [ERR], ...e/dou/work/svn/nginx_module/durap/system/core/router.lua:61, called by function:route, router failed, request: /demo1/welcome/database, host: dou.com
-2013-07-31 17:22:36, [ERR], ...e/dou/work/svn/nginx_module/durap/system/core/router.lua:61, called by function:route, router failed, request: /demo1/welcome/database, host: dou.com
-2013-07-31 17:23:07, [ERR], ...e/dou/work/svn/nginx_module/durap/system/core/router.lua:61, called by function:route, router failed, request: /demo1/welcome/database, host: dou.com
-2013-07-31 17:24:46, [ERR], ...e/dou/work/svn/nginx_module/durap/system/core/router.lua:62, called by function:route, router failed, 1, welcome, database, request: /demo1/welcome/database, host: dou.com
-2013-07-31 17:25:27, [DEBUG], ...ou/work/svn/nginx_module/durap/system/database/mysql.lua:271, called by function:query, log sql:, insert into `welcome` (`name`, `dateline`) values ('dou', '2013-07-31 17:25:27'), request: /demo1/welcome/database, host: dou.com
-2013-07-31 17:25:27, [DEBUG], ...ou/work/svn/nginx_module/durap/system/database/mysql.lua:271, called by function:query, log sql:, select count(*) as num from `welcome, request: /demo1/welcome/database, host: dou.com
-2013-07-31 17:25:27, [DEBUG], ...ou/work/svn/nginx_module/durap/system/database/mysql.lua:271, called by function:list, log sql:, SELECT `name` FROM `welcome`  WHERE `name` = 'dou' ORDER BY `dateline` DESC LIMIT 2, 10, request: /demo1/welcome/database, host: dou.com
-2013-07-31 18:15:12, [DEBUG], ...ou/work/svn/nginx_module/durap/system/database/mysql.lua:271, called by function:query, log sql:, insert into `welcome` (`name`, `dateline`) values ('dou', '2013-07-31 18:15:12'), request: /demo1/welcome/database, host: dou.com
-2013-07-31 18:15:12, [DEBUG], ...ou/work/svn/nginx_module/durap/system/database/mysql.lua:271, called by function:query, log sql:, select count(*) as num from `welcome, request: /demo1/welcome/database, host: dou.com
-2013-07-31 18:15:12, [DEBUG], ...ou/work/svn/nginx_module/durap/system/database/mysql.lua:271, called by function:list, log sql:, SELECT `name` FROM `welcome`  WHERE `name` = 'dou' ORDER BY `dateline` DESC LIMIT 2, 10, request: /demo1/welcome/database, host: dou.com
