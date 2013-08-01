@@ -172,6 +172,7 @@ function connect(self, config)
     end
 
     _reset_vars(mysql)
+    query(mysql, "set names " .. config.charset)
     return mysql
 end
 

@@ -3,19 +3,17 @@
 local debug = require "core.debug"
 local durap = require "core.durap"
 
-durap:init(debug.DEBUG)
+local dp = durap:init(debug.DEBUG)
 
-debug = get_instance().debug
+debug = dp.debug
 
 local router = require "core.router"
 local rt = router:new()
 
 local ctr, func, args = rt:route()
 
-ngx.say(type(ctr))
 if not ctr then
     ngx.exit(404)
 end
 
 ctr[func](unpack(args));
-

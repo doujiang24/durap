@@ -38,13 +38,15 @@ function init(self, level)
     local req = request:new()
     local dbg = debug:init(level, req, APPPATH)
 
-    ngx.ctx.dp = setmetatable({
+    local dp = setmetatable({
         APPNAME = APPNAME,
         APPPATH = APPPATH,
         request = req,
-        loader = loader:new(APPNAME, APPPATH),
+        loader = loader:new(APPNAME, APPPATH, dbg),
         debug = dbg
     }, mt)
+    ngx.ctx.dp = dp
+    return dp
 end
 
 local class_mt = {

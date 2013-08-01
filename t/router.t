@@ -10,7 +10,7 @@ BEGIN {
 use Test::Nginx::Socket @skip;
 use Cwd qw(cwd);
 
-repeat_each(50);
+repeat_each(5);
 #repeat_each(10);
 
 plan tests => repeat_each() * (3 * blocks());
@@ -19,12 +19,14 @@ my $pwd = cwd();
 
 our $HttpConfig = qq{
     resolver \$TEST_NGINX_RESOLVER;
+    lua_package_path "$pwd/system/?.lua;;";
 };
 
 $ENV{TEST_NGINX_RESOLVER} = '8.8.8.8';
 $ENV{TEST_NGINX_MYSQL_PORT} ||= 3306;
 $ENV{TEST_NGINX_MYSQL_HOST} ||= '127.0.0.1';
 $ENV{TEST_NGINX_MYSQL_PATH} ||= '/var/run/mysql/mysql.sock';
+$ENV{TEST_NGINX_ROOT_PATH} ||= "$pwd/";
 
 #log_level 'warn';
 
@@ -36,93 +38,76 @@ run_tests();
 
 __DATA__
 
-=== TEST 1: big field value exceeding 256
+=== TEST 1: test router
 --- http_config eval: $::HttpConfig
 --- config
     location /t {
+        set $router_uri "/welcome/hello/dou";
+        set $APPNAME "demo1";
+        set $ROOT $TEST_NGINX_ROOT_PATH;
+
         content_by_lua '
-            local cjson = require "cjson"
+            local debug = require "core.debug"
+            local durap = require "core.durap"
 
-            local mysql = require "resty.mysql"
-            local db = mysql:new()
+            local dp = durap:init(debug.DEBUG)
 
-            db:set_timeout(2000) -- 2 sec
+            debug = dp.debug
 
-            local ok, err, errno, sqlstate = db:connect({
-                host = "$TEST_NGINX_MYSQL_HOST",
-                port = $TEST_NGINX_MYSQL_PORT,
-                database = "ngx_test",
-                user = "ngx_test",
-                password = "ngx_test"})
+            local router = require "core.router"
+            local rt = router:new()
 
-            if not ok then
-                ngx.say("failed to connect: ", err, ": ", errno, " ", sqlstate)
-                return
+            local ctr, func, args = rt:route()
+
+            if not ctr then
+                ngx.exit(404)
             end
 
-            ngx.say("connected to mysql.")
-
-            local res, err, errno, sqlstate = db:query("drop table if exists cats")
-            if not res then
-                ngx.say("bad result: ", err, ": ", errno, ": ", sqlstate, ".")
-                return
-            end
-
-            ngx.say("table cats dropped.")
-
-            res, err, errno, sqlstate = db:query("create table cats (id serial primary key, name varchar(1024))")
-            if not res then
-                ngx.say("bad result: ", err, ": ", errno, ": ", sqlstate, ".")
-                return
-            end
-
-            ngx.say("table cats created.")
-
-            res, err, errno, sqlstate = db:query("insert into cats (name) value (\'"
-                   .. string.rep("B", 1024)
-                   .. "\')")
-
-            if not res then
-                ngx.say("bad result: ", err, ": ", errno, ": ", sqlstate, ".")
-                return
-            end
-
-            ngx.say(res.affected_rows, " rows inserted into table cats (last id: ", res.insert_id, ")")
-
-            res, err, errno, sqlstate = db:query("select * from cats order by id asc")
-            if not res then
-                ngx.say("bad result: ", err, ": ", errno, ": ", sqlstate, ".")
-                return
-            end
-
-            ngx.say("result: ", cjson.encode(res))
-
-            res, err, errno, sqlstate = db:query("select * from cats order by id desc")
-            if not res then
-                ngx.say("bad result: ", err, ": ", errno, ": ", sqlstate, ".")
-                return
-            end
-
-            ngx.say("result: ", cjson.encode(res))
-
-            local ok, err = db:close()
-            if not ok then
-                ngx.say("failed to close: ", err)
-                return
-            end
+            ctr[func](unpack(args));
         ';
     }
 --- request
 GET /t
 --- response_body eval
-'connected to mysql.
-table cats dropped.
-table cats created.
-1 rows inserted into table cats (last id: 1)
-result: [{"name":"' . ('B' x 1024)
-   . '","id":"1"}]' . "\n" .
-'result: [{"name":"' . ('B' x 1024)
-   . '","id":"1"}]' . "\n"
+'say hello, dou.' . "\n"
+--- no_error_log
+[error]
+
+
+=== TEST 1: test mysql
+--- http_config eval: $::HttpConfig
+--- config
+    location /t {
+        set $router_uri "/welcome/database";
+        set $APPNAME "demo1";
+        set $ROOT $TEST_NGINX_ROOT_PATH;
+
+        content_by_lua '
+            local debug = require "core.debug"
+            local durap = require "core.durap"
+
+            local dp = durap:init(debug.DEBUG)
+
+            debug = dp.debug
+
+            local router = require "core.router"
+            local rt = router:new()
+
+            local ctr, func, args = rt:route()
+
+            if not ctr then
+                ngx.exit(404)
+            end
+
+            ctr[func](unpack(args));
+        ';
+    }
+--- request
+GET /t
+--- response_body eval
+'table welcome created.
+new one added.
+count num match list count.' . "\n"
 --- no_error_log
 [error]
 

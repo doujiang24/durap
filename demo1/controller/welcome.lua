@@ -7,21 +7,33 @@ local loader = dp.loader
 local ngx = ngx
 local type = type
 local setmetatable = setmetatable
+local tonumber = tonumber
 
 local require = require
 
 function hello(name)
-    ngx.say('say hello, ', name)
+    ngx.say('say hello, ', name, ".")
 end
 
 function database()
     local MWelcome = loader:model('welcome')
     local welcome = MWelcome:new()
-    welcome:add('dou')
+
+    local res = welcome:create()
+    if res then
+        ngx.say('table welcome created.')
+    end
+
+    local res = welcome:add('dou')
+    if res then
+        ngx.say('new one added.')
+    end
 
     local total = welcome:count()
-    ngx.say('total num : ', total)
-
     local res = welcome:list()
-    ngx.say(cjson.encode(res))
+    welcome:keepalive()
+
+    if tonumber(total) == #res then
+        ngx.say('count num match list count.')
+    end
 end

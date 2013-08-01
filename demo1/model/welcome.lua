@@ -25,6 +25,23 @@ function new(self)
     return setmetatable({ mysql = mysql:connect(config) }, mt)
 end
 
+function create(self)
+    local mysql = self.mysql
+    local sql = [[
+        DROP TABLE IF EXISTS `welcome`;
+    ]]
+    mysql:query(sql)
+    local sql = [[
+        CREATE TABLE `welcome` (
+        `id` int(11) NOT NULL AUTO_INCREMENT,
+        `name` varchar(255) NOT NULL DEFAULT '',
+        `dateline` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        PRIMARY KEY (`id`)
+        ) ENGINE=InnoDB;
+    ]]
+    return mysql:query(sql)
+end
+
 function add(self, name)
     local mysql = self.mysql
     local setarr = {
@@ -41,7 +58,7 @@ end
 
 function list(self)
     local mysql = self.mysql
-    return mysql:select("name"):where("name", "dou"):limit(10, 2):order_by("dateline", 'DESC'):get(db_table)
+    return mysql:select("name"):where("name", "dou"):order_by("dateline", 'DESC'):get(db_table)
 end
 
 function keepalive(self)
