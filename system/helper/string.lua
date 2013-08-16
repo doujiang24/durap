@@ -22,7 +22,9 @@ function split(s, pattern, ret)
         pos = fend + 1
         fstart, fend = find(s, pattern, pos)
     end
-    insert(ret, sub(s, pos))
+    if pos <= #s then
+        insert(ret, sub(s, pos))
+    end
     return ret
 end
 

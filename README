@@ -1,3 +1,19 @@
-This is lua web framework
+Durap
+This is lua web framework based on ngx-openresty.
+Now it just works!
 
-It just works!
+__VERSION = 0.01
+
+简要介绍
+1. 基本实现了 MVC 的小框架，PHP Like（CodeIgniter）。有 router，Model，Controller，（现在没有 View），支持多 APP
+2. system 目录为框架代码，t 目录为测试集（由 test-nginx 驱动），APP 代码可以新建目录存放（一个 APP 一个目录），每个 APP 相互独立
+3. router：规则类似 CI，根据 router_uri 来映射 app/controller 目录下的 module，router_uri 类似 uri，在 nginx.conf 里设定
+4. model：在 system/database 下封装了 mysql, redis 的库，主要包含 connect，error log，以及 mysql 的 active record 封装
+          每个 APP 有自己的 model 实现，在 app/model 目录下
+5. controller：app/controller 目录下存放当前 APP 的 controller
+6. loader：用来装在 APP 里的 module（controller，model，config） ---*** system 内的 module 通过 require 调用 ***---
+7. index.lua：框架的统一入口
+
+
+License
+This software is distributed under Apache License Version 2.0, see file LICENSE or http://www.apache.org/licenses/LICENSE-2.0

@@ -1,24 +1,33 @@
 -- Copyright (C) 2013 MaMa
 
 local strhelper = require "helper.string"
+local tblhelper = require "helper.table"
 
 local get_instance = get_instance
 
 local setmetatable = setmetatable
 local error = error
 local concat = table.concat
-local remove = table.remove
 local type = type
 local unpack = unpack
+local strip = strhelper.strip
+local split = strhelper.split
+local slice = tblhelper.slice
+local insert = table.insert
 
 
 module(...)
+
+local max_level = 2
+local default_func = "index"
+local default_hander = "index"
+
 
 local mt = { __index = _M }
 
 local function _fetch_uri_string(self)
     local str = self.uri
-    self.segments = strhelper.split(strhelper.strip(str, "/"), "/")
+    self.segments = split(strip(str, "/"), "/")
 end
 
 function new(self)
@@ -37,25 +46,22 @@ function route(self)
     _fetch_uri_string(self)
     local loader, segments, debug = self.loader, self.segments, self.debug
 
-    if #segments > 0 then
-        local ctr = loader:controller(segments[1])
+    if #segments == 0 then
+        insert(segments, default_hander)
+    end
+    local fend = (#segments > max_level) and max_level or #segments
+    for i = 1, fend do
+        local ctr = loader:controller(concat(slice(segments, 1, i), "/"))
+        if not ctr and not segments[i+1] then
+            insert(segments, default_hander)
+            ctr = loader:controller(concat(slice(segments, 1, i+1), "/"))
+        end
         if ctr then
-            local func = segments[2]
+            local func = segments[i+1]
             if func and type(ctr[func]) == "function" then
-                remove(segments, 2)
-                remove(segments, 1)
-                return ctr, func, segments
-            end
-        else
-            local ctr = loader:controller(concat({segments[1], "/", segments[2]}))
-            if ctr then
-                local func = segments[3]
-                if func and type(ctr[func]) == "function" then
-                    remove(segments, 3)
-                    remove(segments, 2)
-                    remove(segments, 1)
-                    return ctr, func, segments
-                end
+                return ctr, func, slice(segments, i+2)
+            elseif not func and type(ctr[default_func]) == "function" then
+                return ctr, default_func, {}
             end
         end
     end

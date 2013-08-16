@@ -13,6 +13,8 @@ local strip = strhelper.strip
 local lower = string.lower
 local str_find = string.find
 local type = type
+local ipairs = ipairs
+local tonumber = tonumber
 
 local get_instance = get_instance
 
@@ -58,25 +60,29 @@ local function _where(self, key, value, mod, escape)
 end
 
 local function _where_in(self, key, values, boolean_in, mod)
-    local ar_where = self.ar_where
+    if #values == 1 then
+        return _where(self, key, values[1], mod)
+    end
 
+    local ar_where = self.ar_where
     local where_arr = {}
 
     if #ar_where >= 1 then
         insert(where_arr, mod)
     end
 
-    insert(where_arr, "`" .. k .. "`")
+    insert(where_arr, "`" .. key .. "`")
 
     if not boolean_in then
-        insert(where_arr, "NOT")
+        insert(where_arr, "not")
     end
-    insert(where_arr, "IN (")
+    insert(where_arr, "in (")
 
+    local vals = {}
     for i, v in ipairs(values) do
-        values[i] = quote_sql_str(v)
+        insert(vals, quote_sql_str(v))
     end
-    insert(where_arr, concat(values, ", "))
+    insert(where_arr, concat(vals, ", "))
     insert(where_arr, ")")
 
     insert(ar_where, concat(where_arr, " "))
@@ -92,15 +98,15 @@ local function _like(self, key, match, boolean_in, mod)
         insert(where_arr, mod)
     end
 
-    insert(where_arr, "`" .. k .. "`")
+    insert(where_arr, "`" .. key .. "`")
 
     if not boolean_in then
-        insert(where_arr, "NOT")
+        insert(where_arr, "not")
     end
-    insert(where_arr, "LIKE")
+    insert(where_arr, "like")
 
-    pattern = strip(quote_sql_str(match), "'")
-    insert(where_arr, '"%' .. pattern .. '%"')
+    local pattern = strip(quote_sql_str(match), "'")
+    insert(where_arr, "'%" .. pattern .. "%'")
 
     insert(ar_where, concat(where_arr, " "))
     return self
@@ -134,10 +140,10 @@ local function _gen_where_sql(self)
     local ar_order_by = self.ar_order_by
 
     local sqlvars = {
-        (#ar_where >= 1) and (" WHERE " .. concat(ar_where, " ")) or "",
-        ar_group_by and (" GROUP BY " .. ar_group_by) or "",
-        (#ar_having >= 1) and (" HAVING " .. concat(ar_having, " ")) or "",
-        (#ar_order_by >= 1) and (" ORDER BY " .. concat(ar_order_by, " ")) or ""
+        (#ar_where >= 1) and (" where " .. concat(ar_where, " ")) or "",
+        ar_group_by and (" group by " .. ar_group_by) or "",
+        (#ar_having >= 1) and (" having " .. concat(ar_having, " ")) or "",
+        (#ar_order_by >= 1) and (" order by " .. concat(ar_order_by, ", ")) or ""
     }
     return concat(sqlvars)
 end
@@ -204,16 +210,38 @@ function add(self, table, setarr)
     return res and res.insert_id
 end
 
+function replace(self, table, setarr)
+    local keys, values = {}, {}
+    for key, val in pairs(setarr) do
+        insert(keys, key)
+        insert(values, quote_sql_str(val))
+    end
+    local sqlvars = {
+        "replace into `",
+        table,
+        "` (`",
+        concat(keys, "`, `"),
+        "`) values (",
+        concat(values, ", "),
+        ")"
+    }
+    local sql = concat(sqlvars, "")
+
+    local res = self:query(sql)
+    return res and res.insert_id
+end
+
 function count(self, table, wherearr)
     local sqlvars = {
-        "select count(*) as num from `",
+        "select count(*) as `num` from `",
         table,
+        "` ",
         _gen_where_sql(self)
     }
     local sql = concat(sqlvars, "")
 
     local res = self:query(sql)
-    return res[1].num
+    return tonumber(res[1].num)
 end
 
 function get(self, table, lmt, offset)
@@ -221,13 +249,13 @@ function get(self, table, lmt, offset)
     local ar_select, ar_limit, ar_offset = self.ar_select, self.ar_limit, self.ar_offset
 
     local sqlvars = {
-        "SELECT ",
+        "select ",
         (#ar_select >= 1) and concat(ar_select, ", ") or "*",
-        " FROM `",
+        " from `",
         table,
         "` ",
         _gen_where_sql(self),
-        ar_limit and (" LIMIT " .. ar_offset .. ", " .. ar_limit) or ""
+        ar_limit and (" limit " .. ar_offset .. ", " .. ar_limit) or ""
     }
     local sql = concat(sqlvars)
     _reset_vars(self)
@@ -242,35 +270,37 @@ end
 function update(self, table, setarr, wherearr)
     local ar_set, ar_limit = self.ar_set, self.ar_limit
     local sqlvars = {
-        "UPDATE `",
+        "update `",
         table,
         "` ",
-        " SET ",
+        " set ",
         concat(ar_set, ", "),
         _gen_where_sql(self),
-        ar_limit and (" LIMIT " .. ar_limit) or ""
+        ar_limit and (" limit " .. ar_limit) or ""
     }
     local sql = concat(sqlvars)
     _reset_vars(self)
-    return query(self, sql)
+    local res = query(self, sql)
+    return res and res.affected_rows
 end
 
 function delete(self, table, wherearr)
     local ar_limit = self.ar_limit
     local sqlvars = {
-        "DELETE FROM `",
+        "delete from `",
         table,
         "` ",
         _gen_where_sql(self),
-        ar_limit and (" LIMIT " .. ar_limit) or ""
+        ar_limit and (" limit " .. ar_limit) or ""
     }
     local sql = concat(sqlvars)
     _reset_vars(self)
-    return query(self, sql)
+    local res = query(self, sql)
+    return res and res.affected_rows
 end
 
 function truncate(self, table)
-    local sql = "TRUNCATE TABLE `" ..  table .. "`"
+    local sql = "truncate table `" ..  table .. "`"
     return query(self, sql)
 end
 
@@ -292,44 +322,44 @@ end
 -- where functions
 function where(self, key, value, escape)
     escape = (escape == nil) and true or escape
-    return _where(self, key, value, "AND", escape)
+    return _where(self, key, value, "and", escape)
 end
 
 function or_where(self, key, value, escape)
     escape = (escape == nil) and true or escape
-    return _where(self, key, value, "OR", escape)
+    return _where(self, key, value, "or", escape)
 end
 
 function where_in(self, key, values)
-    return _where_in(self, key, values, true, 'AND')
+    return _where_in(self, key, values, true, 'and')
 end
 
 function where_not_in(self, key, values)
-    return _where_in(self, key, values, false, 'AND')
+    return _where_in(self, key, values, false, 'and')
 end
 
 function or_where_in(self, key, values)
-    return _where_in(self, key, values, true, 'OR')
+    return _where_in(self, key, values, true, 'or')
 end
 
 function or_where_not_in(self, key, values)
-    return _where_in(self, key, values, false, 'OR')
+    return _where_in(self, key, values, false, 'or')
 end
 
-function like(self, key, pattern)
-    return _like(self, key, match, true, 'AND')
+function like(self, key, match)
+    return _like(self, key, match, true, 'and')
 end
 
-function not_like(self, key, pattern)
-    return _like(self, key, match, false, 'AND')
+function not_like(self, key, match)
+    return _like(self, key, match, false, 'and')
 end
 
-function or_like(self, key, pattern)
-    return _like(self, key, match, true, 'OR')
+function or_like(self, key, match)
+    return _like(self, key, match, true, 'or')
 end
 
-function or_not_like(self, key, pattern)
-    return _like(self, key, match, false, 'OR')
+function or_not_like(self, key, match)
+    return _like(self, key, match, false, 'or')
 end
 -- end where functions
 
@@ -346,23 +376,23 @@ function select(self, key, escape)
 end
 
 function select_max(self, key, alias)
-    return _select_func(self, key, alias, "MAX")
+    return _select_func(self, key, alias, "max")
 end
 
 function select_min(self, key, alias)
-    return _select_func(self, key, alias, "MIN")
+    return _select_func(self, key, alias, "min")
 end
 
 function select_avg(self, key, alias)
-    return _select_func(self, key, alias, "AVG")
+    return _select_func(self, key, alias, "avg")
 end
 
 function select_sum(self, key, alias)
-    return _select_func(self, key, alias, "SUM")
+    return _select_func(self, key, alias, "sum")
 end
 
 function select_count(self, key, alias)
-    return _select_func(self, key, alias, "COUNT")
+    return _select_func(self, key, alias, "count")
 end
 -- end select function
 
@@ -374,11 +404,11 @@ function group_by(self, key)
 end
 
 function having(self, condition)
-    return _having(self, condition, "AND")
+    return _having(self, condition, "and")
 end
 
 function or_having(self, condition)
-    return _having(self, condition, "OR")
+    return _having(self, condition, "or")
 end
 -- end group by function
 
@@ -402,7 +432,7 @@ function set(self, key, value, escape)
 end
 
 function order_by(self, key, order)
-    order = order or "DESC"
+    order = order or "desc"
     local ar_order_by = self.ar_order_by
 
     local order_arr = { "`", key, "` ", order }

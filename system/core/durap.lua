@@ -7,43 +7,31 @@ local request = require "core.request"
 local loader = require "core.loader"
 local debug = require "core.debug"
 
-local _G = _G
 local getmetatable = getmetatable
 local setmetatable = setmetatable
+local rawget = rawget
 
 
 module(...)
 
 local mt = { __index = _M }
 
-function get_instance()
-    return ngx.ctx.dp
-end
-
-local function _allover_init()
-    if not _G.get_instance then
-        _G.get_instance = get_instance
-    end
-
-    if not _G.cache_module then
-        _G.cache_module = {}
-    end
-end
-
 function init(self, level)
-    _allover_init()
-
     local APPNAME = ngx_var.APPNAME
     local APPPATH = ngx_var.ROOT .. ngx_var.APPNAME .. "/"
     local req = request:new()
-    local dbg = debug:init(level, req, APPPATH)
+
+    local lder = loader:new(APPNAME, APPPATH)
+    local conf = lder:config('core')
+    local debug_level = conf and conf.debug or 'DEBUG'
+    local level = debug[debug_level]
 
     local dp = setmetatable({
         APPNAME = APPNAME,
         APPPATH = APPPATH,
         request = req,
-        loader = loader:new(APPNAME, APPPATH, dbg),
-        debug = dbg
+        loader = lder,
+        debug = debug:init(level, req, APPPATH)
     }, mt)
     ngx.ctx.dp = dp
     return dp

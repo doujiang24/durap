@@ -44,27 +44,9 @@ __DATA__
     location /t {
         set $router_uri "/welcome/hello/dou";
         set $APPNAME "demo1";
-        set $ROOT $TEST_NGINX_ROOT_PATH;
+        set $ROOT "$TEST_NGINX_ROOT_PATH";
 
-        content_by_lua '
-            local debug = require "core.debug"
-            local durap = require "core.durap"
-
-            local dp = durap:init(debug.DEBUG)
-
-            debug = dp.debug
-
-            local router = require "core.router"
-            local rt = router:new()
-
-            local ctr, func, args = rt:route()
-
-            if not ctr then
-                ngx.exit(404)
-            end
-
-            ctr[func](unpack(args));
-        ';
+        content_by_lua_file "$TEST_NGINX_ROOT_PATHindex.lua";
     }
 --- request
 GET /t
@@ -80,27 +62,9 @@ GET /t
     location /t {
         set $router_uri "/welcome/database";
         set $APPNAME "demo1";
-        set $ROOT $TEST_NGINX_ROOT_PATH;
+        set $ROOT "$TEST_NGINX_ROOT_PATH";
 
-        content_by_lua '
-            local debug = require "core.debug"
-            local durap = require "core.durap"
-
-            local dp = durap:init(debug.DEBUG)
-
-            debug = dp.debug
-
-            local router = require "core.router"
-            local rt = router:new()
-
-            local ctr, func, args = rt:route()
-
-            if not ctr then
-                ngx.exit(404)
-            end
-
-            ctr[func](unpack(args));
-        ';
+        content_by_lua_file "$TEST_NGINX_ROOT_PATHindex.lua";
     }
 --- request
 GET /t
@@ -118,27 +82,9 @@ count num match list count.' . "\n"
     location /t {
         set $router_uri "/welcome/redis/dou";
         set $APPNAME "demo1";
-        set $ROOT $TEST_NGINX_ROOT_PATH;
+        set $ROOT "$TEST_NGINX_ROOT_PATH";
 
-        content_by_lua '
-            local debug = require "core.debug"
-            local durap = require "core.durap"
-
-            local dp = durap:init(debug.DEBUG)
-
-            debug = dp.debug
-
-            local router = require "core.router"
-            local rt = router:new()
-
-            local ctr, func, args = rt:route()
-
-            if not ctr then
-                ngx.exit(404)
-            end
-
-            ctr[func](unpack(args));
-        ';
+        content_by_lua_file "$TEST_NGINX_ROOT_PATHindex.lua";
     }
 --- request
 GET /t

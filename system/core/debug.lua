@@ -2,7 +2,6 @@
 
 local strhelper = require "helper.string"
 
-local get_instance = get_instance
 local setmetatable = setmetatable
 local error = error
 local concat = table.concat
@@ -10,6 +9,7 @@ local getinfo = debug.getinfo
 local io_open = io.open
 local unpack = unpack
 local time = ngx.localtime
+local type = type
 
 local ngx_log = ngx.log
 local ngx_err = ngx.ERR
@@ -18,10 +18,16 @@ local ngx_err = ngx.ERR
 module(...)
 
 DEBUG = 1
-ERR = 2
+INFO = 2
+NOTICE = 3
+WARN = 4
+ERR = 5
 
 local level_str = {
     'DEBUG',
+    'INFO',
+    'NOTICE',
+    'WARN',
     'ERR'
 }
 
@@ -59,15 +65,23 @@ function log(self, log_level, ...)
         return
     end
 
+    local args = { ... }
+    for i = 1, #args do
+        if args[i] == nil then
+            args[i] = "nil"
+        elseif type(args[i]) == "table" then
+            args[i] = "is a table"
+        end
+    end
+
     local info = getinfo(2)
     local request = self.request
-    local args = concat({ ... }, ", ")
     local log_vars = {
         time(),
         "[" .. level_str[log_level] .. "]",
         info.short_src .. ":" .. info.currentline,
-        "called by function:" .. info.name,
-        args,
+        "called by function:" .. (info.name or "main"),
+        concat(args, ", "),
         "request: " .. request.request_uri,
         "host: " .. request.host
     }

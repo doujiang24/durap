@@ -8,9 +8,10 @@ local setmetatable = setmetatable
 local get_uri_args = ngx.req.get_uri_args
 local get_post_args = ngx.req.get_post_args
 local unescape_uri = ngx.unescape_uri
-local ipairs = ipairs
+local pairs = pairs
 local error = error
 
+local ngx = ngx
 
 module(...)
 
@@ -20,12 +21,11 @@ _VERSION = '0.01'
 local mt = { __index = _M }
 
 local function _get_uri_args(self)
-    local get_vars = {}
-    local vars = get_uri_args()
-    for k, v in ipairs(vars) do
-        get_vars[unescape_uri[k]] = unescape_uri[v]
+    if not self.get_vars then
+        self.get_vars = get_uri_args()
     end
-    self.get_vars = vars
+
+    return self.get_vars
 end
 
 function new(self, config)
@@ -53,12 +53,7 @@ function new(self, config)
 end
 
 function _get(self, key)
-    local get_vars = self.get_vars
-    if not get_vars then
-        _get_uri_args(self)
-        get_vars = self.get_vars
-    end
-
+    local get_vars = _get_uri_args(self)
     if key then
         return get_vars[key]
     end

@@ -56,10 +56,10 @@ local class_mt = {
         return function (self, ...)
             local conn, debug = self.conn, self.debug
             local res, err = conn[key](conn, ...)
-            if not res then
+            if not res and err then
                 local args = { ... }
-                debug:log(debug.ERR, "failed to query redis, error:", err, "operater:", unpack(args))
-                return nil
+                debug:log(debug.ERR, "failed to query redis, error:", err, "operater:", key, unpack(args))
+                return false
             end
             return res
         end

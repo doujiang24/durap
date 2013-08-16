@@ -22,28 +22,24 @@ _VERSION = '0.01'
 
 local mt = { __index = _M }
 
+local cache_module = {}
 
-function new(self, appname, apppath, debug)
+
+function new(self, appname, apppath)
     local res = {
         appname = appname,
-        apppath = apppath,
-        debug = debug
+        apppath = apppath
     }
     return setmetatable(res, mt)
 end
 
 local function _get_cache(self, module)
-    local appname, debug = self.appname, self.debug
-    local cache_module = _G.cache_module
-    if cache_module[appname] and cache_module[appname][module] then
-        debug:log(debug.DEBUG, 'load cache module: ', module)
-    end
+    local appname = self.appname
     return cache_module[appname] and cache_module[appname][module]
 end
 
 local function _set_cache(self, name, val)
     local appname = self.appname
-    local cache_module = _G.cache_module
     if not cache_module[appname] then
         cache_module[appname] = {}
     end
@@ -77,6 +73,11 @@ end
 
 function config(self, conf)
     local module = "config/" .. conf
+    return _load_module(self, module)
+end
+
+function library(self, conf)
+    local module = "library/" .. conf
     return _load_module(self, module)
 end
 
