@@ -1,8 +1,13 @@
 -- Copyright (C) 2013 MaMa
 
+local utf8 = require "helper.utf8"
+
 local find = string.find
 local sub = string.sub
 local insert = table.insert
+local concat = table.concat
+local type = type
+local regsub = ngx.re.gsub
 
 local setmetatable = setmetatable
 local error = error
@@ -42,6 +47,33 @@ function strip(s, pattern)
     if f_start then sub_end = f_start - 1 end
 
     return sub(s, sub_start or 1, sub_end or #s)
+end
+
+-- to do: not sure allowable_tags work perfect
+function strip_tags(s, allowable_tags)
+    local pattern = "</?[^>]+>"
+    if allowable_tags and type(allowable_tags) == "table" then
+        pattern = "</?+(?!" .. concat(allowable_tags, "|") .. ")([^>]*?)/?>"
+    end
+    return regsub(s, pattern, "", "iux")
+end
+
+-- Translate certain characters
+-- from can be the table { from = to, from1 = to1 }
+-- s is the utf8 string
+function strtr(s, from, to)
+    local ret = {}
+    if type(from) ~= "table" then
+        from = { [from] = to }
+    end
+    for c in utf8.iter(s) do
+        if from[c] then
+            insert(ret, from[c])
+        else
+            insert(ret, c)
+        end
+    end
+    return concat(ret)
 end
 
 local class_mt = {

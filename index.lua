@@ -25,4 +25,5 @@ if not ctr then
     ngx.exit(404)
 end
 
-assert(pcall(ctr[func], unpack(args)))
+--assert(pcall(ctr[func], unpack(args)))
+ctr[func](unpack(args))

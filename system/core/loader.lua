@@ -46,9 +46,9 @@ local function _set_cache(self, name, val)
     cache_module[appname][name] = val
 end
 
-local function _load_module(self, name)
+local function _load_module(self, name, force)
     local cache = _get_cache(self, name)
-    if cache == nil then
+    if force or cache == nil then
         local module = false
         local filename = concat({ self.apppath, name, ".lua" })
         if file.exists(filename) then
@@ -61,24 +61,24 @@ local function _load_module(self, name)
     return cache
 end
 
-function controller(self, contro)
+function controller(self, contro, force)
     local module = "controller/" .. contro
-    return _load_module(self, module)
+    return _load_module(self, module, force)
 end
 
-function model(self, mod)
+function model(self, mod, force)
     local module = "model/" .. mod
-    return _load_module(self, module)
+    return _load_module(self, module, force)
 end
 
-function config(self, conf)
+function config(self, conf, force)
     local module = "config/" .. conf
-    return _load_module(self, module)
+    return _load_module(self, module, force)
 end
 
-function library(self, conf)
+function library(self, conf, force)
     local module = "library/" .. conf
-    return _load_module(self, module)
+    return _load_module(self, module, force)
 end
 
 setmetatable(_M, class_mt)

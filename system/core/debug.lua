@@ -1,6 +1,7 @@
 -- Copyright (C) 2013 MaMa
 
 local strhelper = require "helper.string"
+local cjson = require "cjson"
 
 local setmetatable = setmetatable
 local error = error
@@ -87,6 +88,14 @@ function log(self, log_level, ...)
     }
 
     return _log(self, concat(log_vars, ", "))
+end
+
+function vtype(self, val)
+    return log(self, DEBUG, "vtype:", type(val))
+end
+
+function json(self, val)
+    return log(self, DEBUG, "json:", cjson.encode(val))
 end
 
 local class_mt = {

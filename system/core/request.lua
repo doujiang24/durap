@@ -5,13 +5,13 @@ local ngx_req = ngx.req
 
 local setmetatable = setmetatable
 
+local read_body = ngx.req.read_body
 local get_uri_args = ngx.req.get_uri_args
 local get_post_args = ngx.req.get_post_args
 local unescape_uri = ngx.unescape_uri
 local pairs = pairs
 local error = error
 
-local ngx = ngx
 
 module(...)
 
@@ -26,6 +26,14 @@ local function _get_uri_args(self)
     end
 
     return self.get_vars
+end
+
+local function _get_post_args(self)
+    if not self.post_vars then
+        read_body()
+        self.post_vars = get_post_args()
+    end
+    return self.post_vars
 end
 
 function new(self, config)
@@ -47,6 +55,7 @@ function new(self, config)
         content_length   = ngx_var.content_length,
         get_vars = nil,
         post_vars = nil,
+        input_vars = nil,
         headers = nil
     }
     return setmetatable(res, mt)
@@ -58,6 +67,27 @@ function _get(self, key)
         return get_vars[key]
     end
     return get_vars
+end
+
+function _post(self, key)
+    local post_vars = _get_post_args(self)
+
+    if key then
+        return post_vars[key]
+    end
+    return post_vars
+end
+
+function input(self, key)
+    if not self.input_vars then
+        local vars = _get(self)
+        local post = _post(self)
+        for k, v in pairs(post) do
+            vars[k] = v
+        end
+        self.input_vars = vars
+    end
+    return self.input_vars
 end
 
 local class_mt = {
