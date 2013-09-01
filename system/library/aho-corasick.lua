@@ -10,9 +10,11 @@ local insert = table.insert
 local pairs = pairs
 local setmetatable = setmetatable
 local error = error
+local sleep = ngx.sleep
 
 module(...)
 
+local nonblock = 1000
 local root = ""
 
 -- make: creates a new entry in t for the given string c with
@@ -52,6 +54,10 @@ function build(m)
         end
 
         t[m[i]].word = true
+
+        if i % nonblock == 0 then
+            sleep(0.001)
+        end
     end
 
     -- Build the fails which show how to backtrack when a fail matches
@@ -60,6 +66,7 @@ function build(m)
 
     local q = { root }
 
+    local i = 1
     while #q > 0 do
         local path = remove(q, 1)
 
@@ -80,6 +87,11 @@ function build(m)
             if hit == root then hit = root end
             t[p].hit = hit
         end
+
+        if i % nonblock == 0 then
+            sleep(0.001)
+        end
+        i = i + 1
     end
 
     return t
