@@ -1,3 +1,4 @@
 demo1/logs/error.log
 demo2/log2/error.log
 t/servroot
+*.svn

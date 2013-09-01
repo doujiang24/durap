@@ -51,6 +51,15 @@ function log_file(file, ...)
     return true
 end
 
+function read_all(filename)
+    local file, err = io_open(filename, "r")
+    local data = file and file:read("*a") or nil
+    if file then
+        file:close()
+    end
+    return data
+end
+
 local class_mt = {
     -- to prevent use of casual module global variables
     __newindex = function (table, key, val)

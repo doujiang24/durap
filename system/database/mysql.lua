@@ -163,8 +163,7 @@ end
 
 -- useful functions
 function connect(self, config)
-    local debug = get_instance().debug
-    local mysql = setmetatable({ conn = mysql:new(), config = config, debug = debug }, mt)
+    local mysql = setmetatable({ conn = mysql:new(), config = config }, mt)
 
     local conn = mysql.conn
 
@@ -180,6 +179,7 @@ function connect(self, config)
     })
 
     if not ok then
+        local debug = get_instance().debug
         debug:log(debug.ERR, "failed to connect: ", err, ": ", errno, " ", sqlstate)
         return
     end
@@ -305,7 +305,7 @@ function truncate(self, table)
 end
 
 function query(self, sql)
-    local conn, debug = self.conn, self.debug
+    local conn, debug = self.conn, get_instance().debug
     debug:log(debug.DEBUG, "log sql:", sql)
 
     local res, err, errno, sqlstate = conn:query(sql)
