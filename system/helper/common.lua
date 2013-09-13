@@ -7,8 +7,6 @@ local type = type
 local ipairs = ipairs
 local re_match = ngx.re.match
 
--- debug
-local ngx = ngx
 
 module(...)
 

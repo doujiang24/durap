@@ -10,6 +10,7 @@ local error = error
 local pcall = pcall
 local assert = assert
 local loadfile = loadfile
+local type = type
 local setfenv = setfenv
 local concat = table.concat
 local get_instance = get_instance
@@ -70,6 +71,11 @@ local function _load_module(self, name, force)
     return cache
 end
 
+function core(self, cr, force)
+    local module = "core/" .. contro
+    return _load_module(self, module, force)
+end
+
 function controller(self, contro, force)
     local module = "controller/" .. contro
     return _load_module(self, module, force)
@@ -77,7 +83,8 @@ end
 
 function model(self, mod, force)
     local module = "model/" .. mod
-    return _load_module(self, module, force)
+    local m = _load_module(self, module, force)
+    return m and type(m.new) == "function" and m:new() or m
 end
 
 function config(self, conf, force)
@@ -100,7 +107,7 @@ function _ltp_function(self, tpl, force)
             tplfun = ltp_load_template(fdata, '<?lua','?>')
         else
             local debug = get_instance().debug
-            debug:log(debug.ERR, "failed to load tpl:", tpl)
+            debug:log(debug.ERR, "failed to load tpl:", filename)
             say("failed to load tpl:", tpl)
             exit(200)
         end
@@ -111,12 +118,12 @@ function _ltp_function(self, tpl, force)
 end
 
 function view(self, tpl, data, force)
-    local template = "views/" .. tpl
+    local template, data = "views/" .. tpl, data or {}
     local tplfun = _ltp_function(self, template, force)
     local output = {}
     setmetatable(data, { __index = _G })
     ltp_execute_template(tplfun, data, output)
-    say(output)
+    return output
 end
 
 setmetatable(_M, class_mt)

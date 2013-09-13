@@ -3,10 +3,10 @@
 local strhelper = require "helper.string"
 local cjson = require "cjson"
 
+local traceback = debug.traceback
 local setmetatable = setmetatable
 local error = error
 local concat = table.concat
-local getinfo = debug.getinfo
 local io_open = io.open
 local unpack = unpack
 local time = ngx.localtime
@@ -75,16 +75,14 @@ function log(self, log_level, ...)
         end
     end
 
-    local info = getinfo(2)
     local request = self.request
     local log_vars = {
         time(),
-        "[" .. level_str[log_level] .. "]",
-        info.short_src .. ":" .. info.currentline,
-        "called by function:" .. (info.name or "main"),
-        concat(args, ", "),
+        "host: " .. request.host,
         "request: " .. request.request_uri,
-        "host: " .. request.host
+        concat(args, ", "),
+        traceback(),
+        "\n"
     }
 
     return _log(self, concat(log_vars, ", "))

@@ -268,6 +268,17 @@ function get_where(self, table, wherearr, limit, offset)
 end
 
 function update(self, table, setarr, wherearr)
+    if setarr then
+        for k, v in pairs(setarr) do
+            set(self, k, v)
+        end
+    end
+    if wherearr then
+        for k, v in pairs(wherearr) do
+            where(self, k, v)
+        end
+    end
+
     local ar_set, ar_limit = self.ar_set, self.ar_limit
     local sqlvars = {
         "update `",
@@ -438,6 +449,10 @@ function order_by(self, key, order)
     local order_arr = { "`", key, "` ", order }
     insert(ar_order_by, concat(order_arr))
     return self
+end
+
+function first_row(self, res)
+    return res and res[1] or nil
 end
 
 function keepalive(self)

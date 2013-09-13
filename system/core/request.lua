@@ -5,6 +5,7 @@ local cjson = require "cjson"
 local ngx = ngx
 local ngx_var = ngx.var
 local ngx_req = ngx.req
+local ngx_header = ngx.header
 
 local setmetatable = setmetatable
 
@@ -68,7 +69,7 @@ function new(self, config)
         remote_passwd    = ngx_var.remote_passwd,
         content_type     = ngx_var.content_type,
         content_length   = ngx_var.content_length,
-        header           = ngx.header,
+        header           = ngx_header,
         cookie_set = {},
         session_vars = nil,
         get_vars = nil,
