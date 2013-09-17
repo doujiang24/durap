@@ -1,4 +1,4 @@
--- Copyright (C) 2013 MaMa
+-- Copyright (C) 2013 doujiang24 @ MaMa, Inc.
 
 local strhelper = require "helper.string"
 local tblhelper = require "helper.table"
@@ -20,6 +20,7 @@ module(...)
 
 local max_level = 2
 local default_func = "index"
+local remap_func = "_remap"
 local default_hander = "index"
 
 
@@ -58,7 +59,9 @@ function route(self)
         end
         if ctr then
             local func = segments[i+1]
-            if func and type(ctr[func]) == "function" then
+            if type(ctr[remap_func]) == "function" then
+                return ctr, remap_func, slice(segments, i+1)
+            elseif func and type(ctr[func]) == "function" then
                 return ctr, func, slice(segments, i+2)
             elseif not func and type(ctr[default_func]) == "function" then
                 return ctr, default_func, {}

@@ -1,4 +1,4 @@
--- Copyright (C) 2013 MaMa
+-- Copyright (C) 2013 doujiang24 @ MaMa, Inc.
 
 local mysql = require "resty.mysql"
 local strhelper = require "helper.string"

@@ -1,4 +1,4 @@
--- Copyright (C) 2013 MaMa
+-- Copyright (C) 2013 doujiang24 @ MaMa, Inc.
 
 local cjson = require "cjson"
 
@@ -80,7 +80,7 @@ function new(self, config)
     return setmetatable(res, mt)
 end
 
-function _get(self, key)
+function get(self, key)
     local get_vars = _get_uri_args(self)
     if key then
         return get_vars[key]
@@ -88,7 +88,7 @@ function _get(self, key)
     return get_vars
 end
 
-function _post(self, key)
+function post(self, key)
     local post_vars = _get_post_args(self)
 
     if key then

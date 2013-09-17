@@ -1,4 +1,4 @@
--- Copyright (C) 2013 MaMa
+-- Copyright (C) 2013 doujiang24 @ MaMa, Inc.
 -- Copyright (c) 2013 CloudFlare, Inc.
 
 local utf8 = require "helper.utf8"

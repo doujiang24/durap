@@ -1,4 +1,4 @@
--- Copyright (C) 2013 MaMa
+-- Copyright (C) 2013 doujiang24 @ MaMa, Inc.
 
 local ngx = ngx -- only for ngx.ctx
 local ngx_var = ngx.var

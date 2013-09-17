@@ -1,4 +1,5 @@
 demo1/logs/error.log
-demo2/log2/error.log
+demo2/logs/error.log
+blog/logs/error.log
 t/servroot
 *.svn
