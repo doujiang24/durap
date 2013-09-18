@@ -72,7 +72,7 @@ local function _load_module(self, name, force)
 end
 
 function core(self, cr, force)
-    local module = "core/" .. contro
+    local module = "core/" .. cr
     return _load_module(self, module, force)
 end
 

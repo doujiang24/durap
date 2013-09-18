@@ -7,6 +7,7 @@ local error = error
 local say = ngx.say
 local exit = ngx.exit
 local HTTP_INTERNAL_SERVER_ERROR = ngx.HTTP_INTERNAL_SERVER_ERROR
+local HTTP_NOT_FOUND = ngx.HTTP_NOT_FOUND
 
 module(...)
 
@@ -15,6 +16,13 @@ function show_error(err_msg, ...)
     debug:log(debug.ERR, err_msg, ...)
     say(err_msg)
     exit(HTTP_INTERNAL_SERVER_ERROR)
+end
+
+function show_404(msg, ...)
+    if msg then
+        log_debug(msg, ...)
+    end
+    exit(HTTP_NOT_FOUND)
 end
 
 function log_debug(...)

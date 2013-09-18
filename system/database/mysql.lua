@@ -2,7 +2,9 @@
 
 local mysql = require "resty.mysql"
 local strhelper = require "helper.string"
+local corehelper = require "helper.core"
 
+local log_error = corehelper.log_error
 local setmetatable = setmetatable
 local insert = table.insert
 local concat = table.concat
@@ -179,8 +181,7 @@ function connect(self, config)
     })
 
     if not ok then
-        local debug = get_instance().debug
-        debug:log(debug.ERR, "failed to connect: ", err, ": ", errno, " ", sqlstate)
+        log_error("failed to connect: ", err, ": ", errno, " ", sqlstate)
         return
     end
 
@@ -316,13 +317,13 @@ function truncate(self, table)
 end
 
 function query(self, sql)
-    local conn, debug = self.conn, get_instance().debug
-    debug:log(debug.DEBUG, "log sql:", sql)
+    local conn = self.conn
+    log_debug("log sql:", sql)
 
     local res, err, errno, sqlstate = conn:query(sql)
     if not res then
-        debug:log(debug.ERR, "bad result: ", err, ": ", errno, ": ", sqlstate, ": sql:", sql, ": ", ".")
-        return nil
+        log_error("bad result: ", err, ": ", errno, ": ", sqlstate, ": sql:", sql, ": ", ".")
+        return
     end
 
     return res
@@ -455,13 +456,24 @@ function first_row(self, res)
     return res and res[1] or nil
 end
 
+function close(self)
+    local conn = self.conn
+    local ok, err = conn:close()
+    if not ok then
+        log_error("failed to close mysql: ", err)
+    end
+end
+
 function keepalive(self)
-    local conn, debug = self.conn, self.debug
-    local max_keepalive = self.config.max_keepalive
-    local ok, err = conn:set_keepalive(0, max_keepalive)
-        if not ok then
-            debug:log(debug.ERR, "failed to set redis keepalive: ", err)
-        return
+    local conn, config = self.conn, self.config
+    if not config.idle_timeout or not config.max_keepalive then
+        log_error("not set idle_timeout and max_keepalive in config; turn to close")
+        return close(self)
+    end
+
+    local ok, err = conn:set_keepalive(config.idle_timeout, config.max_keepalive)
+    if not ok then
+        log_error("failed to set mysql keepalive: ", err)
     end
 end
 

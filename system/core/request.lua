@@ -99,8 +99,8 @@ end
 
 function input(self, key)
     if not self.input_vars then
-        local vars = _get(self)
-        local post = _post(self)
+        local vars = get(self)
+        local post = post(self)
         for k, v in pairs(post) do
             vars[k] = v
         end
