@@ -5,6 +5,7 @@ local strhelper = require "helper.string"
 local corehelper = require "helper.core"
 
 local log_error = corehelper.log_error
+local log_debug = corehelper.log_debug
 local setmetatable = setmetatable
 local insert = table.insert
 local concat = table.concat
