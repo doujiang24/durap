@@ -14,6 +14,7 @@ password = "abc"
 max_packet_size = 1024 * 1024
 
 max_keepalive = 100
+idle_timeout = 60 * 60 * 1000 -- 1 hour in ms
 
 charset = "utf8"
 

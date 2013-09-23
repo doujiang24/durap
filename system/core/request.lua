@@ -1,6 +1,8 @@
 -- Copyright (C) 2013 doujiang24 @ MaMa, Inc.
 
+local corehelper = require "helper.core"
 local cjson = require "cjson"
+local upload = require "resty.upload"
 
 local ngx = ngx
 local ngx_var = ngx.var
@@ -9,15 +11,20 @@ local ngx_header = ngx.header
 
 local setmetatable = setmetatable
 
+local log_error = corehelper.log_error
 local read_body = ngx.req.read_body
+local get_headers = ngx.req.get_headers
 local get_uri_args = ngx.req.get_uri_args
 local get_post_args = ngx.req.get_post_args
 local unescape_uri = ngx.unescape_uri
 local pairs = pairs
 local error = error
 local type = type
+local io_open = io.open
 local insert = table.insert
 local concat = table.concat
+local sub = string.sub
+local match = string.match
 local cookie_time = ngx.cookie_time
 local pairs = pairs
 local get_instance = get_instance
@@ -44,10 +51,98 @@ local function _get_uri_args(self)
     return self.get_vars
 end
 
+local function _get_headers(self)
+    if not self.headers then
+        self.headers = get_headers()
+    end
+    return self.headers
+end
+
+local function _tmp_name()
+    return '/home/doujiang/work/git/durap/blog/tmp/abcdef'
+end
+
+local function _get_post_form(self)
+    local ret = {}
+    local form, err = upload:new(8096)
+    if not form then
+        log_error("failed to new upload: ", err)
+    end
+
+    form:set_timeout(3000) -- 3 sec
+
+    local k, v, fn, ft, tn
+    while true do
+        local typ, res, err = form:read()
+        if not typ then
+            log_error("failed to read upload form: ", err)
+            return ret
+        end
+
+        if typ == "header" then
+            if res[1] == "Content-Disposition" then
+                k = match(res[2], "name=\"(.-)\"")
+                fn= match(res[2], "filename=\"(.-)\"")
+            elseif res[1] == "Content-Type" then
+                ft = res[2]
+            end
+
+            if fn and ft then
+                tn = _tmp_name()
+                v = io_open(tn, 'w')
+                if not v then
+                    log_error('failed open tmpfile')
+                end
+            end
+        end
+
+        if typ == "body" then
+            if type(v) == "userdata" then
+                v:write(res)
+            else
+                v = v and v .. res or res
+            end
+        end
+
+        if typ == "part_end" then
+            if type(v) == "userdata" then
+                v:close()
+                v = { filename = fn, tmpname = tn, filetype = ft }
+            end
+
+            local kv = ret[k]
+            if type(kv) == "nil" then
+                ret[k] = v
+            elseif type(kv) == "table" and #kv >= 1 then
+                insert(ret[k], v)
+            else
+                ret[k] = { ret[k], v }
+            end
+
+            k, v, fn, ft, tn = nil, nil, nil, nil, nil
+        end
+
+        if typ == "eof" then
+            break
+        end
+    end
+
+    local typ, res, err = form:read()
+    ngx.say("read: ", cjson.encode({typ, res}))
+
+    return ret
+end
+
 local function _get_post_args(self)
-    if not self.post_vars then
-        read_body()
-        self.post_vars = get_post_args()
+    self.post_vars = {}
+    if self.method == "POST" then
+        local headers = _get_headers(self)
+        if headers['Content-Type'] and sub(headers['Content-Type'], 1, 19) == "multipart/form-data" then
+            self.post_vars = _get_post_form()
+        else
+            read_body()
+            self.post_vars = get_post_args()
+        end
     end
     return self.post_vars
 end
@@ -89,7 +184,7 @@ function get(self, key)
 end
 
 function post(self, key)
-    local post_vars = _get_post_args(self)
+    local post_vars = self.post_vars or _get_post_args(self)
 
     if key then
         return post_vars[key]
@@ -116,8 +211,7 @@ local function _set_cookie(self)
     end
     self.header['Set-Cookie'] = t
     if ngx.headers_sent then
-        local debug = get_instance().debug
-        debug:log(debug.ERR, 'failed to set cookie, header has seeded')
+        log_error('failed to set cookie, header has seeded')
         return false
     end
     return true
@@ -160,8 +254,7 @@ local function _session(self)
             ses = cjson.decode(set_decrypt_session(set_decode_base64(ses_str)))
             ses = cjson.decode(set_decrypt_session(set_decode_base64(ses_str)))
             if not ses or type(ses) ~= "table" then
-                local debug = get_instance().debug
-                debug:log(debug.ERR, 'failed to decode session, session_str:', ses_str)
+                log_error('failed to decode session, session_str:', ses_str)
                 ses = {}
             end
         end

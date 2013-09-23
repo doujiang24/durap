@@ -2,6 +2,7 @@
 
 local strhelper = require "helper.string"
 local tblhelper = require "helper.table"
+local corehelper = require "helper.core"
 
 local get_instance = get_instance
 
@@ -14,6 +15,7 @@ local strip = strhelper.strip
 local split = strhelper.split
 local slice = tblhelper.slice
 local insert = table.insert
+local log_error = corehelper.log_error
 
 
 module(...)
@@ -37,7 +39,6 @@ function new(self)
     return setmetatable({
         loader = dp.loader,
         apppath = dp.APPPATH,
-        debug = dp.debug,
         uri = dp.request.uri,
         segments = nil
     }, mt)
@@ -45,7 +46,7 @@ end
 
 function route(self)
     _fetch_uri_string(self)
-    local loader, segments, debug = self.loader, self.segments, self.debug
+    local loader, segments = self.loader, self.segments
 
     if #segments == 0 then
         insert(segments, default_hander)
@@ -68,7 +69,7 @@ function route(self)
             end
         end
     end
-    debug:log(debug.ERR, "router failed", unpack(segments))
+    log_error("router failed", unpack(segments))
     return nil
 end
 

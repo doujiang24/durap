@@ -10,6 +10,7 @@ host = "127.0.0.1"
 port = "6400"
 
 max_keepalive = 100
+idle_timeout = 60 * 60 * 1000 -- 1 hour in ms
 
 
 local class_mt = {
