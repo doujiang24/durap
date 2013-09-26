@@ -1,12 +1,14 @@
 -- Copyright (C) 2013 MaMa
 
 local cjson = require "cjson"
+local urlhelper = require "helper.url"
 
 local get_instance = get_instance
 local setmetatable = setmetatable
 local error = error
 local tonumber = tonumber
 local say = ngx.say
+local redirect = urlhelper.redirect
 
 
 local _M = getfenv()
@@ -41,9 +43,12 @@ function _return(data)
 end
 
 function _show(page, data)
-    local loader = get_instance().loader
+    local dp = get_instance()
+    local loader, router = dp.loader, dp.router
     data = data or {}
+    data.title = "后台管理"
     data.admin_user = _get_adminuser()
+    data._uri = router:get_uri()
     data._page_ = "admin/" .. page
     say(loader:view('admin/page', data))
 end

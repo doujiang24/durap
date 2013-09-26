@@ -39,6 +39,31 @@ function logout()
     redirect('admin/user/login')
 end
 
+function profile()
+    _require_admin()
+
+    _show('profile', data)
+end
+
+function password()
+    local admin = _require_admin()
+
+    local dp = get_instance()
+    local loader, request = dp.loader, dp.request
+    local posts = request:post()
+    local password, newpassword = posts.password, posts.newpassword
+
+    local ret, errmsg = false
+    local user = loader:model('madminuser')
+    if user:login(admin.username, password) then
+        ret = user:repass(admin.uid, newpassword)
+    else
+        errmsg = "password error"
+    end
+
+    _return({status = ret and 1 or 0, errmsg = errmsg or 'change failed'})
+end
+
 local class_mt = {
     __index = get_instance().loader:core('admin_controller'),
     -- to prevent use of casual module global variables

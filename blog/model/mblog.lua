@@ -15,20 +15,12 @@ local md5 = ngx.md5
 _VERSION = '0.01'
 
 -- constants
-local db_table = "admin_user"
+local db_table = "blog"
 
 
 local _M = getfenv()
 local mt = { __index = _M }
 
-local function _salt()
-    local random = resty_radom.bytes(2)
-    return resty_str.to_hex(random)
-end
-
-local function _password(password, salt)
-    return md5(md5(password) .. salt)
-end
 
 function new(self)
     local dp = get_instance()
@@ -38,11 +30,6 @@ end
 
 function add(self, username, password)
     local mysql = self.mysql
-
-    if not username and not password then
-        local debug = get_instance().debug
-        debug:log(debug.ERR, 'username or password is not valid:', username, password)
-    end
 
     local salt = _salt()
     password = _password(password, salt)
@@ -64,21 +51,24 @@ function get(self, value, key)
     return mysql:first_row(mysql:get(db_table))
 end
 
-function login(self, username, password)
+function count(self, search_key)
     local mysql = self.mysql
 
-    local user = get(self, username, 'username')
-    return user and user.password == _password(password, user.salt) and
-        user or false
+    if search_key then
+        mysql:like('title', search_key)
+    end
+    return mysql:where('status', 1):count(db_table)
 end
 
-function repass(self, uid, password)
+function lists(self, size, start, search_key)
     local mysql = self.mysql
 
-    local user = get(self, uid)
-    local password = _password(password, user.salt)
+    if search_key then
+        mysql:like('title', search_key)
+    end
+    local lists = mysql:where('status', 1):limit(size, start):order_by('id', 'DESC'):get(db_table) or {}
 
-    return mysql:update(db_table, { password = password }, { uid = uid })
+    return lists
 end
 
 function close(self)

@@ -73,6 +73,11 @@ function route(self)
     return nil
 end
 
+function get_uri(self)
+    local segments = self.segments
+    return concat(segments, "/")
+end
+
 local class_mt = {
     -- to prevent use of casual module global variables
     __newindex = function (table, key, val)

@@ -243,7 +243,7 @@ function count(self, table, wherearr)
     local sql = concat(sqlvars, "")
 
     local res = self:query(sql)
-    return tonumber(res[1].num)
+    return res and tonumber(res[1].num) or 0
 end
 
 function get(self, table, lmt, offset)
@@ -294,7 +294,7 @@ function update(self, table, setarr, wherearr)
     local sql = concat(sqlvars)
     _reset_vars(self)
     local res = query(self, sql)
-    return res and res.affected_rows
+    return res and true or false, res and res.affected_rows or 0
 end
 
 function delete(self, table, wherearr)
@@ -324,7 +324,6 @@ function query(self, sql)
     local res, err, errno, sqlstate = conn:query(sql)
     if not res then
         log_error("bad result: ", err, ": ", errno, ": ", sqlstate, ": sql:", sql, ": ", ".")
-        return
     end
 
     return res
