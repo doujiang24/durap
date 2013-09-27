@@ -23,7 +23,7 @@ module(...)
 local max_level = 2
 local default_func = "index"
 local remap_func = "_remap"
-local default_hander = "index"
+local default_ctr = "index"
 
 
 local mt = { __index = _M }
@@ -47,23 +47,24 @@ end
 function route(self)
     _fetch_uri_string(self)
     local loader, segments = self.loader, self.segments
+    local default_ctr = loader:config('core').default_ctr or default_ctr
 
     if #segments == 0 then
-        insert(segments, default_hander)
+        insert(segments, default_ctr)
     end
     local fend = (#segments > max_level) and max_level or #segments
     for i = 1, fend do
         local ctr = loader:controller(concat(slice(segments, 1, i), "/"))
         if not ctr and not segments[i+1] then
-            insert(segments, default_hander)
+            insert(segments, default_ctr)
             ctr = loader:controller(concat(slice(segments, 1, i+1), "/"))
         end
         if ctr then
             local func = segments[i+1]
-            if type(ctr[remap_func]) == "function" then
-                return ctr, remap_func, slice(segments, i+1)
-            elseif func and type(ctr[func]) == "function" then
+            if func and type(ctr[func]) == "function" then
                 return ctr, func, slice(segments, i+2)
+            elseif type(ctr[remap_func]) == "function" then
+                return ctr, remap_func, slice(segments, i+1)
             elseif not func and type(ctr[default_func]) == "function" then
                 return ctr, default_func, {}
             end

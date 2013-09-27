@@ -127,9 +127,6 @@ local function _get_post_form(self)
         end
     end
 
-    local typ, res, err = form:read()
-    ngx.say("read: ", cjson.encode({typ, res}))
-
     return ret
 end
 
