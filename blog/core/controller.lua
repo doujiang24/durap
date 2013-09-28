@@ -13,10 +13,6 @@ local redirect = urlhelper.redirect
 
 local _M = getfenv()
 
-function _return(data)
-    say(cjson.encode(data))
-end
-
 function _get_user()
     local dp = get_instance()
     if dp.user == nil then
@@ -50,6 +46,13 @@ function _show(page, data)
     data._uri = router:get_uri()
     data._page_ = page
     say(loader:view('page', data))
+end
+
+function _template(page, data)
+    local dp = get_instance()
+    local loader = dp.loader
+    data = data or {}
+    say(loader:view(page, data))
 end
 
 local class_mt = {

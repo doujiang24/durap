@@ -1,5 +1,7 @@
 demo1/logs/error.log
 demo2/logs/error.log
 blog/logs/error.log
+blog/tmp/*
+blog/static/images/*
 t/servroot
 *.svn

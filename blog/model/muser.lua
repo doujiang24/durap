@@ -4,12 +4,14 @@ local mysql = require "database.mysql"
 local tblhelper = require "helper.table"
 local resty_radom = require "resty.random"
 local resty_str = require "resty.string"
+local corehelper = require "helper.core"
 
 local setmetatable = setmetatable
 local error = error
 local get_instance = get_instance
 local in_tbl = tblhelper.in_tbl
 local md5 = ngx.md5
+local log_error = corehelper.log_error
 
 
 _VERSION = '0.01'
@@ -40,8 +42,7 @@ function add(self, username, password)
     local mysql = self.mysql
 
     if not username and not password then
-        local debug = get_instance().debug
-        debug:log(debug.ERR, 'username or password is not valid:', username, password)
+        log_error('username or password is not valid:', username, password)
     end
 
     local salt = _salt()
@@ -70,15 +71,6 @@ function login(self, username, password)
     local user = get(self, username, 'username')
     return user and user.password == _password(password, user.salt) and
         user or false
-end
-
-function repass(self, uid, password)
-    local mysql = self.mysql
-
-    local user = get(self, uid)
-    local password = _password(password, user.salt)
-
-    return mysql:update(db_table, { password = password }, { uid = uid })
 end
 
 function close(self)

@@ -15,9 +15,9 @@ INSERT INTO `users` VALUES (1,'doujiang','ab018ad4929571548f9ee20c9970a313','ef3
 
 CREATE TABLE `blog` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `title` varchar(255) NOT NULL,
-  `content` text NOT NULL,
-  `status` tinyint(4) NOT NULL,
+  `title` varchar(255) NOT NULL DEFAULT '',
+  `content` text NOT NULL DEFAULT '',
+  `status` tinyint(4) NOT NULL DEFAULT 1,
   `time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

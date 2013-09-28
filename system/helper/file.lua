@@ -1,5 +1,8 @@
 -- Copyright (C) 2013 doujiang24 @ MaMa, Inc.
 
+local corehelper = require "helper.core"
+
+local log_error = corehelper.log_error
 local find = string.find
 local sub = string.sub
 local insert = table.insert
@@ -10,9 +13,23 @@ local error = error
 local io_open = io.open
 local type = type
 local concat = table.concat
+local rename = os.rename
+local time = ngx.time
 
 module(...)
 
+
+function tmpname(filename)
+    return time() .. filename
+end
+
+function move(source, dest)
+    local ok, err = rename(source, dest)
+    if not ok then
+        log_error('move file err:', err, source, dest)
+    end
+    return ok
+end
 
 function exists(f)
     local fh, err = io_open(f)

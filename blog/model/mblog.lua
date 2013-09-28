@@ -28,44 +28,35 @@ function new(self)
     return setmetatable({ mysql = mysql:connect(config) }, mt)
 end
 
-function add(self, username, password)
+function add(self, title, content, uid)
     local mysql = self.mysql
 
-    local salt = _salt()
-    password = _password(password, salt)
     local setarr = {
-        username = username,
-        password = password,
-        salt = salt
+        uid = uid,
+        title = title,
+        content = content
     }
 
     return mysql:add(db_table, setarr)
 end
 
 -- key is uid or username; default uid
-function get(self, value, key)
-    key = key == "username" and key or "uid"
+function get(self, id)
     local mysql = self.mysql
 
-    mysql:where(key, value):where('status', 1)
+    mysql:where('id', id):where('status', 1)
     return mysql:first_row(mysql:get(db_table))
 end
 
-function count(self, search_key)
+function count(self)
     local mysql = self.mysql
 
-    if search_key then
-        mysql:like('title', search_key)
-    end
     return mysql:where('status', 1):count(db_table)
 end
 
-function lists(self, size, start, search_key)
+function lists(self, size, start)
     local mysql = self.mysql
 
-    if search_key then
-        mysql:like('title', search_key)
-    end
     return mysql:where('status', 1):limit(size, start):order_by('id', 'DESC'):get(db_table) or {}
 end
 

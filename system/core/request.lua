@@ -25,8 +25,11 @@ local insert = table.insert
 local concat = table.concat
 local sub = string.sub
 local match = string.match
+local find = string.find
 local cookie_time = ngx.cookie_time
+local time = ngx.time
 local pairs = pairs
+local random = math.random
 local get_instance = get_instance
 
 local set_encrypt_session = ndk.set_var.set_encrypt_session
@@ -38,15 +41,14 @@ local set_decode_base64 = ndk.set_var.set_decode_base64
 module(...)
 
 _VERSION = '0.01'
+chunk_size = 8096
 
 local session_key = '_LUASES_'
 
 local mt = { __index = _M }
 
 local function _get_uri_args(self)
-    if not self.get_vars then
-        self.get_vars = get_uri_args()
-    end
+    self.get_vars = get_uri_args()
 
     return self.get_vars
 end
@@ -58,13 +60,17 @@ local function _get_headers(self)
     return self.headers
 end
 
-local function _tmp_name()
-    return '/home/doujiang/work/git/durap/blog/tmp/abcdef'
+function ip_address()
+    return ngx_var.remote_addr
+end
+
+local function _tmp_name(self)
+    return self.apppath .. "tmp/" .. time() .. ip_address() .. random(10000, 99999)
 end
 
 local function _get_post_form(self)
-    local ret = {}
-    local form, err = upload:new(8096)
+    local tmp_files, ret = self.tmp_files, {}
+    local form, err = upload:new(chunk_size)
     if not form then
         log_error("failed to new upload: ", err)
     end
@@ -88,10 +94,10 @@ local function _get_post_form(self)
             end
 
             if fn and ft then
-                tn = _tmp_name()
-                v = io_open(tn, 'w')
+                tn = _tmp_name(self)
+                v, err = io_open(tn, 'w')
                 if not v then
-                    log_error('failed open tmpfile')
+                    log_error('failed open tmpfile', err)
                 end
             end
         end
@@ -108,6 +114,7 @@ local function _get_post_form(self)
             if type(v) == "userdata" then
                 v:close()
                 v = { filename = fn, tmpname = tn, filetype = ft }
+                insert(tmp_files, tn)
             end
 
             local kv = ret[k]
@@ -135,7 +142,7 @@ local function _get_post_args(self)
     if self.method == "POST" then
         local headers = _get_headers(self)
         if headers['Content-Type'] and sub(headers['Content-Type'], 1, 19) == "multipart/form-data" then
-            self.post_vars = _get_post_form()
+            self.post_vars = _get_post_form(self)
         else
             read_body()
             self.post_vars = get_post_args()
@@ -144,7 +151,7 @@ local function _get_post_args(self)
     return self.post_vars
 end
 
-function new(self, config)
+function new(self, apppath)
     local res = {
         method           = ngx_var.request_method,
         schema           = ngx_var.schema,
@@ -162,6 +169,8 @@ function new(self, config)
         content_type     = ngx_var.content_type,
         content_length   = ngx_var.content_length,
         header           = ngx_header,
+        apppath = apppath,
+        tmp_files = {},
         cookie_set = {},
         session_vars = nil,
         get_vars = nil,
@@ -173,7 +182,7 @@ function new(self, config)
 end
 
 function get(self, key)
-    local get_vars = _get_uri_args(self)
+    local get_vars = self.get_vars or _get_uri_args(self)
     if key then
         return get_vars[key]
     end

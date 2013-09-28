@@ -19,7 +19,7 @@ local mt = { __index = _M }
 function init(self, level)
     local APPNAME = ngx_var.APPNAME
     local APPPATH = ngx_var.ROOT .. ngx_var.APPNAME .. "/"
-    local req = request:new()
+    local req = request:new(APPPATH)
 
     local lder = loader:new(APPNAME, APPPATH)
     local conf = lder:config('core')
