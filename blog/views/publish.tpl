@@ -1,18 +1,30 @@
-<div class="container">
-    <div class="box span9 offset1">
-        <div class="box-header" data-original-title>
-            <h2> Blog Publish</h2>
-        </div>
-        <form class="box-content" method="post" action="/blog/publish" enctype="multipart/form-data" id="publish-form">
-            <fieldset>
-                <input name="title" class="span8" type="text" placeholder="Blog Title">
-                <textarea name="content" id="editor">default value</textarea>
-                <button name="submit" type="submit" class="btn">Submit</button>
-            </fieldset>
-        </form>
-    </div>
+<div class="content">
+    <div class="container">
 
-</div> <!-- /container -->
+        <div class="row make-post">
+
+            <div class="">
+                <form method="post" action="/blog/publish" enctype="multipart/form-data" id="publish-form">
+                <div class="well">
+                    <h6>Title</h6>
+                    <hr />
+                    <input name="title" type="text" class="span7" placeholder="Enter Title">
+                    <br />
+                    <hr />
+
+                    <h6>Content</h6>
+                    <textarea name="content" id="editor" class="span7"></textarea>
+                    <hr />
+
+                    <button class="offset4 btn btn-primary">Publish</button>
+                </div>
+                </form>
+            </div>
+
+        </div>
+
+    </div>
+</div>
 
 <script>
 $( document ).ready( function() {

@@ -3,5 +3,6 @@ demo2/logs/error.log
 blog/logs/error.log
 blog/tmp/*
 blog/static/images/*
+blog/static/metro
 t/servroot
 *.svn

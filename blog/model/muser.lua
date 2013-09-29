@@ -43,6 +43,7 @@ function add(self, username, password)
 
     if not username and not password then
         log_error('username or password is not valid:', username, password)
+        return nil
     end
 
     local salt = _salt()

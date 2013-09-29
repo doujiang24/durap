@@ -9,6 +9,28 @@ local redirect = urlhelper.redirect
 
 local _M = getfenv()
 
+function register()
+    local dp = get_instance()
+    local loader, request = dp.loader, dp.request
+    local posts = request:post()
+    local username, password = posts.username, posts.password
+
+    local data
+    if username and password then
+        local muser = loader:model('muser')
+        local uid = muser:add(username, password)
+        muser:close()
+
+        if uid then
+            request:set_session('uid', uid)
+            return redirect('')
+        else
+            data = { msg = 'failed, may be the username have been registered !' }
+        end
+    end
+    _show('register', data)
+end
+
 function login()
     local dp = get_instance()
     local loader, request = dp.loader, dp.request

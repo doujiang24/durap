@@ -2,6 +2,7 @@
 
 local cjson = require "cjson"
 local urlhelper = require "helper.url"
+local pagination = require "library.pagination"
 
 local get_instance = get_instance
 local setmetatable = setmetatable
@@ -9,7 +10,6 @@ local error = error
 local tonumber = tonumber
 local say = ngx.say
 local redirect = urlhelper.redirect
-
 
 local _M = getfenv()
 
@@ -29,7 +29,7 @@ function _get_user()
     return dp.user
 end
 
-function _require_login()
+function _require_user()
     local user = _get_user()
     if not user then
         redirect('user/login')
@@ -53,6 +53,15 @@ function _template(page, data)
     local loader = dp.loader
     data = data or {}
     say(loader:view(page, data))
+end
+
+function _pagination(uri, total, size)
+    local config = {
+        base_url = uri,
+        total_rows = total,
+        per_page = size
+    }
+    return pagination.create_links(config)
 end
 
 local class_mt = {

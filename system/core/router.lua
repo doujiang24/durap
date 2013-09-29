@@ -28,9 +28,12 @@ local default_ctr = "index"
 
 local mt = { __index = _M }
 
-local function _fetch_uri_string(self)
-    local str = self.uri
-    self.segments = split(strip(str, "/"), "/")
+function get_segments(self)
+    if not self.segments then
+        local str = self.uri
+        self.segments = split(strip(str, "/"), "/")
+    end
+    return self.segments
 end
 
 function new(self)
@@ -45,8 +48,8 @@ function new(self)
 end
 
 function route(self)
-    _fetch_uri_string(self)
-    local loader, segments = self.loader, self.segments
+    local loader = self.loader
+    local segments = get_segments(self)
     local default_ctr = loader:config('core').default_ctr or default_ctr
 
     if #segments == 0 then

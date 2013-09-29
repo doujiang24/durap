@@ -25,16 +25,19 @@ function view(id)
 
     local mblog = loader:model('mblog')
     local blog = mblog:get(id)
-    mblog:close()
-    get_instance().debug:json(blog)
 
     if blog then
+        local lists = mblog:lists(10)
+        mblog:close()
+
         local muser = loader:model('muser')
         local author = muser:get(blog.uid)
         muser:close()
-        local data = { blog = blog, author = author }
+        local data = { blog = blog, author = author, lists = lists }
         return _show('view', data)
     end
+
+    mblog:close()
     redirect('blog')
 end
 
@@ -42,23 +45,37 @@ function lists(start)
     local dp = get_instance()
     local loader = dp.loader
 
-    local start, size = start or 0, 20
-    local blog = loader:model('mblog')
-    local num = blog:count()
-    local res = blog:lists(size, start)
+    local start, size = start or 0, 1
+    local mblog, muser = loader:model('mblog'), loader:model('muser')
+    local num = mblog:count()
+    local res = mblog:lists(size, start)
+    if res then
+        for i, blog in ipairs(res) do
+            blog.author = muser:get(blog.uid)
+        end
+    end
 
-    local data = { total = num, lists = res }
+    local recents = mblog:lists(10)
+
+    mblog:close()
+    muser:close()
+
+    local page = _pagination('blog/lists', num, size)
+
+    local data = { total = num, lists = res, recents = recents, page = page }
     _show('lists', data)
 end
 
 function publish()
+    local user = _require_user()
+
     local dp = get_instance()
     local loader, request = dp.loader, dp.request
     local posts = request:post()
 
     if posts.title and posts.content then
         local mblog = loader:model('mblog')
-        local id = mblog:add(posts.title, posts.content)
+        local id = mblog:add(posts.title, posts.content, user.uid)
         redirect('blog/view/' .. id)
     end
     _show('publish')

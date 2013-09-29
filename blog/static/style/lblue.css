@@ -1,0 +1,138 @@
+/* Light Blue */
+
+a{
+	color: #1ba1e2;
+}
+
+a:hover{
+	color: #178ec7;
+}
+
+blockquote{
+	border-left: 4px solid #1ba1e2;
+}
+
+.color{
+	color: #1ba1e2;	
+}
+
+header{
+	border-top: 2px solid #1ba1e2;
+}
+
+.navbar .btn{
+background:#1ba1e2 !important;  
+}
+
+.navbar .btn:hover{
+background:#178ec7 !important;
+}
+
+.da-slider{
+	border-top: 3px solid #1ba1e2;
+	border-bottom: 3px solid #1ba1e2;
+}
+
+.da-slide h2 span{
+	background: url("../img/border-l.png") left bottom no-repeat;
+}
+
+.da-slide .da-link{
+	background: #1ba1e2;
+}	
+
+.da-slide .da-link:hover{
+	background: #178ec7;
+}
+
+.da-dots span{
+	background: #1ba1e2;
+}
+
+.da-arrows span{
+	background: #1ba1e2;
+}
+
+.full-slider{
+	border-top: 5px solid #178ec7;
+	background: #1ba1e2;
+}
+
+.full-slider .button a{
+	background: #178ec7;
+}
+
+.full-slider .button a:hover{
+	background: #178ec7;
+}	
+
+.flex-back{
+	background: #178ec7;	
+}
+
+.home-product{
+	background: #1ba1e2;
+}
+
+.home-product .home-prod-img{
+	border: 1px solid #178ec7;
+}
+
+#portfolio .element{
+	background: #178ec7;
+}
+
+#portfolio .pcap{
+	background:#1ba1e2;
+	border-top: 2px solid #178ec7;
+}
+
+/* Events - Accordion*/
+
+.events .accordion-heading h5{
+background:#1ba1e2;
+}
+
+.social-links{
+	background: #1ba1e2;	
+}
+
+.social-links i{
+	background: #178ec7;
+}
+
+.formy{
+	background: #1ba1e2;
+}
+
+.service-two i{
+	color: #1ba1e2;	
+}
+
+.features-two .feat i, .features-three i{
+	color: #1ba1e2;
+}
+
+.about-two .asocial i{
+	background:#1ba1e2;
+}
+
+.career .nav-tabs > li > a:hover{
+	background: #1ba1e2;
+}
+
+.button a{
+	background: #1ba1e2;
+}
+
+.button a:hover{
+	background: #178ec7;
+}	
+
+.paging a:hover{
+	background: #1ba1e2;
+}
+
+.paging .current{
+	background: #178ec7;
+}

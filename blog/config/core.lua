@@ -6,7 +6,7 @@ local _M = getfenv()
 
 debug = "DEBUG"
 
-default_ctr = "blog"
+default_ctr = "home"
 
 local class_mt = {
     -- to prevent use of casual module global variables

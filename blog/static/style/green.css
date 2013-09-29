@@ -1,0 +1,138 @@
+/* Green */
+
+a{
+	color: #41bb19;
+}
+
+a:hover{
+	color: #379e15;
+}
+
+blockquote{
+	border-left: 4px solid #41bb19;
+}
+
+.color{
+	color: #41bb19;	
+}
+
+header{
+	border-top: 2px solid #41bb19;
+}
+
+.navbar .btn{
+background:#41bb19 !important;  
+}
+
+.navbar .btn:hover{
+background:#379e15 !important;
+}
+
+.da-slider{
+	border-top: 3px solid #41bb19;
+	border-bottom: 3px solid #41bb19;
+}
+
+.da-slide h2 span{
+	background: url("../img/border-g.png") left bottom no-repeat;
+}
+
+.da-slide .da-link{
+	background: #41bb19;
+}	
+
+.da-slide .da-link:hover{
+	background: #379e15;
+}
+
+.da-dots span{
+	background: #41bb19;
+}
+
+.da-arrows span{
+	background: #41bb19;
+}
+
+.full-slider{
+	border-top: 5px solid #379e15;
+	background: #41bb19;
+}
+
+.full-slider .button a{
+	background: #379e15;
+}
+
+.full-slider .button a:hover{
+	background: #379e15;
+}	
+
+.flex-back{
+	background: #379e15;	
+}
+
+.home-product{
+	background: #41bb19;
+}
+
+.home-product .home-prod-img{
+	border: 1px solid #379e15;
+}
+
+#portfolio .element{
+	background: #379e15;
+}
+
+#portfolio .pcap{
+	background:#41bb19;
+	border-top: 2px solid #379e15;
+}
+
+/* Events - Accordion*/
+
+.events .accordion-heading h5{
+background:#41bb19;
+}
+
+.social-links{
+	background: #41bb19;	
+}
+
+.social-links i{
+	background: #379e15;
+}
+
+.formy{
+	background: #41bb19;
+}
+
+.service-two i{
+	color: #41bb19;	
+}
+
+.features-two .feat i, .features-three i{
+	color: #41bb19;
+}
+
+.about-two .asocial i{
+	background:#41bb19;
+}
+
+.career .nav-tabs > li > a:hover{
+	background: #41bb19;
+}
+
+.button a{
+	background: #41bb19;
+}
+
+.button a:hover{
+	background: #379e15;
+}	
+
+.paging a:hover{
+	background: #41bb19;
+}
+
+.paging .current{
+	background: #379e15;
+}

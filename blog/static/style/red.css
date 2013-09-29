@@ -1,0 +1,138 @@
+/* Red */
+
+a{
+	color: #ff3738;
+}
+
+a:hover{
+	color: #e52e2f;
+}
+
+blockquote{
+	border-left: 4px solid #ff3738;
+}
+
+.color{
+	color: #ff3738;	
+}
+
+header{
+	border-top: 2px solid #ff3738;
+}
+
+.navbar .btn{
+background:#ff3738 !important;  
+}
+
+.navbar .btn:hover{
+background:#e52e2f !important;
+}
+
+.da-slider{
+	border-top: 3px solid #ff3738;
+	border-bottom: 3px solid #ff3738;
+}
+
+.da-slide h2 span{
+	background: url("../img/border-r.png") left bottom no-repeat;
+}
+
+.da-slide .da-link{
+	background: #ff3738;
+}	
+
+.da-slide .da-link:hover{
+	background: #e52e2f;
+}
+
+.da-dots span{
+	background: #ff3738;
+}
+
+.da-arrows span{
+	background: #ff3738;
+}
+
+.full-slider{
+	border-top: 5px solid #e52e2f;
+	background: #ff3738;
+}
+
+.full-slider .button a{
+	background: #e52e2f;
+}
+
+.full-slider .button a:hover{
+	background: #e52e2f;
+}	
+
+.flex-back{
+	background: #e52e2f;	
+}
+
+.home-product{
+	background: #ff3738;
+}
+
+.home-product .home-prod-img{
+	border: 1px solid #e52e2f;
+}
+
+#portfolio .element{
+	background: #e52e2f;
+}
+
+#portfolio .pcap{
+	background:#ff3738;
+	border-top: 2px solid #e52e2f;
+}
+
+/* Events - Accordion*/
+
+.events .accordion-heading h5{
+background:#ff3738;
+}
+
+.social-links{
+	background: #ff3738;	
+}
+
+.social-links i{
+	background: #e52e2f;
+}
+
+.formy{
+	background: #ff3738;
+}
+
+.service-two i{
+	color: #ff3738;	
+}
+
+.features-two .feat i, .features-three i{
+	color: #ff3738;
+}
+
+.about-two .asocial i{
+	background:#ff3738;
+}
+
+.career .nav-tabs > li > a:hover{
+	background: #ff3738;
+}
+
+.button a{
+	background: #ff3738;
+}
+
+.button a:hover{
+	background: #e52e2f;
+}	
+
+.paging a:hover{
+	background: #ff3738;
+}
+
+.paging .current{
+	background: #e52e2f;
+}

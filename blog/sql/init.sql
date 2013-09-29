@@ -15,6 +15,7 @@ INSERT INTO `users` VALUES (1,'doujiang','ab018ad4929571548f9ee20c9970a313','ef3
 
 CREATE TABLE `blog` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `uid` int(10) unsigned NOT NULL,
   `title` varchar(255) NOT NULL DEFAULT '',
   `content` text NOT NULL DEFAULT '',
   `status` tinyint(4) NOT NULL DEFAULT 1,

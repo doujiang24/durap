@@ -1,0 +1,138 @@
+/* Purple */
+
+a{
+	color: #9b59bb;
+}
+
+a:hover{
+	color: #81499c;
+}
+
+blockquote{
+	border-left: 4px solid #9b59bb;
+}
+
+.color{
+	color: #9b59bb;	
+}
+
+header{
+	border-top: 2px solid #9b59bb;
+}
+
+.navbar .btn{
+background:#9b59bb !important;  
+}
+
+.navbar .btn:hover{
+background:#81499c !important;
+}
+
+.da-slider{
+	border-top: 3px solid #9b59bb;
+	border-bottom: 3px solid #9b59bb;
+}
+
+.da-slide h2 span{
+	background: url("../img/border-p.png") left bottom no-repeat;
+}
+
+.da-slide .da-link{
+	background: #9b59bb;
+}	
+
+.da-slide .da-link:hover{
+	background: #81499c;
+}
+
+.da-dots span{
+	background: #9b59bb;
+}
+
+.da-arrows span{
+	background: #9b59bb;
+}
+
+.full-slider{
+	border-top: 5px solid #81499c;
+	background: #9b59bb;
+}
+
+.full-slider .button a{
+	background: #81499c;
+}
+
+.full-slider .button a:hover{
+	background: #81499c;
+}	
+
+.flex-back{
+	background: #81499c;	
+}
+
+.home-product{
+	background: #9b59bb;
+}
+
+.home-product .home-prod-img{
+	border: 1px solid #81499c;
+}
+
+#portfolio .element{
+	background: #81499c;
+}
+
+#portfolio .pcap{
+	background:#9b59bb;
+	border-top: 2px solid #81499c;
+}
+
+/* Events - Accordion*/
+
+.events .accordion-heading h5{
+background:#9b59bb;
+}
+
+.social-links{
+	background: #9b59bb;	
+}
+
+.social-links i{
+	background: #81499c;
+}
+
+.formy{
+	background: #9b59bb;
+}
+
+.service-two i{
+	color: #9b59bb;	
+}
+
+.features-two .feat i, .features-three i{
+	color: #9b59bb;
+}
+
+.about-two .asocial i{
+	background:#9b59bb;
+}
+
+.career .nav-tabs > li > a:hover{
+	background: #9b59bb;
+}
+
+.button a{
+	background: #9b59bb;
+}
+
+.button a:hover{
+	background: #81499c;
+}	
+
+.paging a:hover{
+	background: #9b59bb;
+}
+
+.paging .current{
+	background: #81499c;
+}
