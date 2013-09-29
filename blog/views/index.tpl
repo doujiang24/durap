@@ -30,7 +30,7 @@
 
                                 <h5>Metro Mania</h5>
                                 <p>The font template is Metro Mania based on bootstrap.</p>
-                                <p>And I buy it buy from <a href="https://wrapbootstrap.com/theme/metro-mania-no.1-metro-bootstrap-theme-WB07F9G8L"></a>wrapbootstrap.</p>
+                                <p>And I buy it buy from <a href="https://wrapbootstrap.com/theme/metro-mania-no.1-metro-bootstrap-theme-WB07F9G8L">wrapbootstrap</a>.</p>
 
                             </div>
                         </div>

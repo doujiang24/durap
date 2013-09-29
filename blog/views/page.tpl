@@ -44,7 +44,7 @@
                 <div class="span6">
                     <div class="logo">
                         <h1><a href="/">Free <span class="color">Blog</span></a></h1>
-                        <div class="hmeta">Responsive Metro Styled Theme</div>
+                        <div class="hmeta">Just a demo power by durap</div>
                     </div>
                 </div>
                 <div class="span4 offset2">
