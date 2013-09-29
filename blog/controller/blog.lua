@@ -45,7 +45,7 @@ function lists(start)
     local dp = get_instance()
     local loader = dp.loader
 
-    local start, size = start or 0, 1
+    local start, size = start or 0, 4
     local mblog, muser = loader:model('mblog'), loader:model('muser')
     local num = mblog:count()
     local res = mblog:lists(size, start)
@@ -62,7 +62,7 @@ function lists(start)
 
     local page = _pagination('blog/lists', num, size)
 
-    local data = { total = num, lists = res, recents = recents, page = page }
+    local data = { lists = res, recents = recents, page = page }
     _show('lists', data)
 end
 

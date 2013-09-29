@@ -14,26 +14,23 @@
                         <div class="flex-caption">
                             <!-- Left column -->
                             <div class="col-l">
+                                <h2>Power By Durap</h2>
+                                <h6>durap is a lua web framework based on ngx-openresty.</h6>
+                                <h6>durap is MVC full.</h6>
+                                <h6>This is the first online demo.</h6>
 
-                                <h2>What Do  Started Today</h2>
-
-                                <h6>Aenean sodales augue ac lacus hendrerit sed rhoncus erat hendrerit. Vivamus vel ultricies elit. Nulla vitae cursus leo. Aenean sodales augue ac lacus hendrerit sed rhoncus erat hendrerit. Vivamus vel ultricies elit. Nulla vitae cursus leo.</h6>
-
-
+                                <div class="button">
+                                    <a href="https://github.com/doujiang24/durap">know more about durap</a>
+                                </div>
                             </div>
                             <!-- Right column -->
                             <div class="col-r">
 
                                 <!-- Use the class "flex-back" to add background inside flex slider -->
 
-                                <h5>Nulla Vitae Rhoncus</h5>
-                                <p>Suspendisse potenti. Morbi ac felis nec mauris imperdiet fermentum. Aenean sodales augue ac lacus hendrerit sed rhoncus erat hendrerit. Vivamus vel ultricies elit. Nulla vitae cursus leo.</p>
-
-
-                                <!-- Button -->
-                                <div class="button">
-                                    <a href="#"><i class="icon-circle-arrow-down"></i> Download Our Software Today</a>
-                                </div>
+                                <h5>Metro Mania</h5>
+                                <p>The font template is Metro Mania based on bootstrap.</p>
+                                <p>And I buy it buy from <a href="https://wrapbootstrap.com/theme/metro-mania-no.1-metro-bootstrap-theme-WB07F9G8L"></a>wrapbootstrap.</p>
 
                             </div>
                         </div>
@@ -42,76 +39,18 @@
 
                         <li>
                         <div class="flex-caption flex-center">
-                            <h2>Don't Miss This Theme</h2>
+                            <h2>Start Free Blog</h2>
 
-                            <p>Aenean sodales augue ac lacus hendrerit sed rhoncus erat hendrerit. Vivamus vel ultricies elit. Nulla vitae cursus leo. Suspendisse potenti. Morbi ac felis nec mauris imperdiet fermentum. </p>
+                            <p> This is just a demo site </p>
+                            <p> You can register, login, publish blog with picture </p>
 
                             <!-- Button -->
                             <div class="button">
-                                <a href="#">Buy It Now</a>
+                                <a href="/blog/publish">start to publish blog</a>
                             </div>
 
                         </div>
                         </li>
-
-
-                        <li>
-
-                        <!-- Slider content -->
-                        <div class="flex-caption">
-                            <!-- Left column -->
-                            <div class="col-l">
-                                <h2>Get Started Today</h2>
-                                <h6>Suspendisse potenti. Morbi ac felis nec mauris imperdiet fermentum. Aenean sodales augue ac lacus hendrerit.</h6>
-
-                                <!-- Button -->
-                                <div class="button">
-                                    <a href="#"><i class="icon-circle-arrow-down"></i> Download</a>
-                                </div>
-
-                            </div>
-                            <!-- Right column -->
-                            <div class="col-r">
-
-                                <!-- Use the class "flex-back" to add background inside flex slider -->
-                                <div class="flex-back">
-                                    <h5>Nulla Vitae Rhoncus</h5>
-                                    <p>Suspendisse potenti. Nulla vitae cursus leo. Morbi ac felis nec mauris imperdiet fermentum. Aenean sodales augue ac lacus hendrerit sed rhoncus erat hendrerit. Vivamus vel ultricies elit. Nulla vitae cursus leo.</p>
-                                </div>
-
-                            </div>
-                        </div>
-
-                        </li>
-
-
-                        <li>
-
-                        <!-- Slider content -->
-                        <div class="flex-caption">
-                            <!-- Left column -->
-                            <div class="col-l">
-                                <h2>Someone Started Today</h2>
-                                <h6>Suspendisse potenti. Morbi ac felis nec mauris imperdiet fermentum. Aenean sodales augue ac lacus hendrerit sed rhoncus erat hendrerit. Vivamus vel ultricies elit.Vivamus vel ultricies elit.</h6>
-
-
-
-                            </div>
-                            <!-- Right column -->
-                            <div class="col-r">
-
-                                <!-- Use the class "flex-back" to add background inside flex slider -->
-
-                                <h2>Nulla Vitae Rhoncus</h2>
-                                <p>Suspendisse potenti. Morbi ac felis nec mauris imperdiet fermentum. Aenean sodales augue ac lacus hendrerit sed rhoncus erat hendrerit. Vivamus vel ultricies elit. Nulla vitae cursus leo.</p>
-
-
-                            </div>
-                        </div>
-
-                        </li>
-
-
                     </ul>
                 </div>
             </div>

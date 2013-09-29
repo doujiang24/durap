@@ -1,11 +1,8 @@
 -- Copyright (C) 2013 MaMa
 
-local urlhelper = require "helper.url"
-
 local get_instance = get_instance
 local setmetatable = setmetatable
 local error = error
-local redirect = urlhelper.redirect
 
 local _M = getfenv()
 
