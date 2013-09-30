@@ -41,7 +41,7 @@ local set_decode_base64 = ndk.set_var.set_decode_base64
 module(...)
 
 _VERSION = '0.01'
-chunk_size = 8096
+local chunk_size = 8096
 
 local session_key = '_LUASES_'
 
@@ -212,7 +212,7 @@ end
 
 local function _set_cookie(self)
     local set, t = self.cookie_set, {}
-    for k, v in pairs(set) do
+    for _k, v in pairs(set) do
         insert(t, v)
     end
     self.header['Set-Cookie'] = t

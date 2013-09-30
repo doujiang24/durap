@@ -4,6 +4,9 @@ Now it just works!
 
 __VERSION = 0.01
 
+DEMO
+http://blog.qinxunw.com
+
 简要介绍
 1. 基本实现了 MVC 的小框架，PHP Like（CodeIgniter）。有 router，Model，Controller，（现在没有 View），支持多 APP
 2. system 目录为框架代码，t 目录为测试集（由 test-nginx 驱动），APP 代码可以新建目录存放（一个 APP 一个目录），每个 APP 相互独立
