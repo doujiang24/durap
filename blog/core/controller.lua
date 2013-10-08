@@ -16,11 +16,11 @@ local _M = getfenv()
 function _get_user()
     local dp = get_instance()
     if dp.user == nil then
-        local loader, session, user = dp.loader, dp.request:session(), false
-        local uid = session.uid
+        local loader, session, user = dp.loader, dp.session, false
+        local uid = session:get('uid')
         if uid and tonumber(uid) > 0 then
             local muser = loader:model('muser')
-            user = muser:get(session.uid)
+            user = muser:get(uid)
             muser:close()
         end
         dp.user = user

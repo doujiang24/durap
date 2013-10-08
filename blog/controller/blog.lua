@@ -89,7 +89,7 @@ function image()
     local filename, err
     if inputs.upload and inputs.upload.filename then
         filename = "/images/" .. ftmpname(inputs.upload.filename)
-        if not move(inputs.upload.tmpname, request.apppath .. "static" .. filename) then
+        if not move(inputs.upload.tmpname, dp.APPPATH .. "static" .. filename) then
             filename, err = nil, 'upload error'
         end
     end

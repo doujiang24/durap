@@ -11,7 +11,7 @@ local _M = getfenv()
 
 function register()
     local dp = get_instance()
-    local loader, request = dp.loader, dp.request
+    local loader, request, session = dp.loader, dp.request, dp.session
     local posts = request:post()
     local username, password = posts.username, posts.password
 
@@ -22,7 +22,7 @@ function register()
         muser:close()
 
         if uid then
-            request:set_session('uid', uid)
+            session:set('uid', uid)
             return redirect('')
         else
             data = { msg = 'failed, may be the username have been registered !' }
@@ -33,7 +33,7 @@ end
 
 function login()
     local dp = get_instance()
-    local loader, request = dp.loader, dp.request
+    local loader, request, session = dp.loader, dp.request, dp.session
     local posts = request:post()
     local username, password = posts.username, posts.password
 
@@ -43,7 +43,7 @@ function login()
         muser:close()
 
         if user then
-            request:set_session('uid', user.uid)
+            session:set('uid', user.uid)
             redirect('')
         else
             local data = { msg = 'username or password error!' }
@@ -55,8 +55,8 @@ function login()
 end
 
 function logout()
-    local request = get_instance().request
-    request:set_session('uid', nil)
+    local session = get_instance().session
+    session:set('uid', nil)
     redirect('')
 end
 
