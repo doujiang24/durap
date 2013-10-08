@@ -2,12 +2,13 @@
 
 local cjson = require "cjson"
 local corehelper = require "helper.core"
-local cookielib = require "library.cookie"
+local cookielib = require "core.cookie"
 local aes = require "resty.aes"
 
 local setmetatable = setmetatable
 local error = error
 local tonumber = tonumber
+local type = type
 local log_error = corehelper.log_error
 local get_instance = get_instance
 local ngx_var = ngx.var
@@ -70,11 +71,11 @@ function init(self)
 end
 
 function get(self, key)
-    local ses = self.session_vars or _get_session(self)
+    local sess = self.session_vars or _get_session(self)
     if key then
-        return ses[key]
+        return sess[key]
     end
-    return ses
+    return sess
 end
 
 function set(self, key, value)
@@ -86,7 +87,7 @@ function set(self, key, value)
     local aes256 = self.aes256
     local str = set_encode_base64(aes256:encrypt(json_encode(sess)))
 
-    set_cookie(self, self.sess_cookie_key, str, nil, '/', ngx_var.host)
+    set_cookie(self.sess_cookie_key, str, nil, '/', ngx_var.host)
 end
 
 local class_mt = {

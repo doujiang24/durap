@@ -4,6 +4,7 @@ local corehelper = require "helper.core"
 
 local setmetatable = setmetatable
 local error = error
+local type = type
 local insert = table.insert
 local concat = table.concat
 local log_error = corehelper.log_error
@@ -14,22 +15,19 @@ local time = ngx.time
 local ngx_var = ngx.var
 local ngx_header = ngx.header
 
-local set_encode_base64 = ndk.set_var.set_encode_base64
-local set_decode_base64 = ndk.set_var.set_decode_base64
-
 
 module(...)
 
 _VERSION = '0.01'
 
 
-function get(self, key)
+function get(key)
     if key then
         return ngx_var["cookie_" .. key]
     end
 end
 
-function set(self, key, value, expire, path, domain, secure, httponly)
+function set(key, value, expire, path, domain, secure, httponly)
     local cookie = {}
     insert(cookie, key .. "=" .. value)
     if expire then
@@ -49,7 +47,16 @@ function set(self, key, value, expire, path, domain, secure, httponly)
     end
     local str = concat(cookie, "; ")
 
-    ngx_header['Set-Cookie'] = str
+    local sent = ngx_header['Set-Cookie']
+    if not sent then
+        ngx_header['Set-Cookie'] = str
+    elseif type(sent) == "table" then
+        insert(sent, str)
+        ngx_header['Set-Cookie'] = sent
+    else
+        ngx_header['Set-Cookie'] = { sent, str }
+    end
+
     if ngx.headers_sent then
         log_error('failed to set cookie, header has seeded')
         return false

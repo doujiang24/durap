@@ -1,5 +1,6 @@
 -- Copyright (C) 2013 doujiang24 @ MaMa, Inc.
 
+local corehelper = require "helper.core"
 local filehelper = require "helper.file"
 local ltp = require "library.ltp.template"
 
@@ -13,6 +14,7 @@ local loadfile = loadfile
 local type = type
 local setfenv = setfenv
 local concat = table.concat
+local show_error = corehelper.show_error
 local get_instance = get_instance
 local fexists = filehelper.exists
 local fread_all = filehelper.read_all
@@ -35,10 +37,11 @@ local mt = { __index = _M }
 local cache_module = {}
 
 
-function new(self, appname, apppath)
+function new(self)
+    local dp = get_instance()
     local res = {
-        appname = appname,
-        apppath = apppath
+        appname = dp.APPNAME,
+        apppath = dp.APPPATH
     }
     return setmetatable(res, mt)
 end
@@ -106,10 +109,7 @@ function _ltp_function(self, tpl, force)
             local fdata = fread_all(filename)
             tplfun = ltp_load_template(fdata, '<?lua','?>')
         else
-            local debug = get_instance().debug
-            debug:log(debug.ERR, "failed to load tpl:", filename)
-            say("failed to load tpl:", tpl)
-            exit(200)
+            show_error("failed to load tpl:", filename)
         end
         _set_cache(self, tpl, tplfun)
         return tplfun

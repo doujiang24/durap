@@ -11,6 +11,7 @@ local io_open = io.open
 local unpack = unpack
 local time = ngx.localtime
 local type = type
+local get_instance = get_instance
 
 local ngx_log = ngx.log
 local ngx_err = ngx.ERR
@@ -34,9 +35,14 @@ local level_str = {
 
 local mt = { __index = _M }
 
-function init(self, log_level, request, apppath)
+function init(self)
+    local dp = get_instance()
+    local loader, apppath = dp.loader, dp.APPPATH
+    local conf = loader:config('core')
+    local debug_level = conf and conf.debug or 'DEBUG'
+    local log_level = self[debug_level]
+
     return setmetatable({
-        request = request,
         log_level = log_level,
         log_file = apppath .. "logs/error.log"
     }, mt)
@@ -75,7 +81,7 @@ function log(self, log_level, ...)
         end
     end
 
-    local request = self.request
+    local request = get_instance().request
     local log_vars = {
         time(),
         "host: " .. request.host,

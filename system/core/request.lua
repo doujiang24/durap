@@ -65,7 +65,8 @@ function ip_address()
 end
 
 local function _tmp_name(self)
-    return self.apppath .. "tmp/" .. time() .. ip_address() .. random(10000, 99999)
+    local apppath = get_instance().APPPATH
+    return apppath .. "tmp/" .. time() .. ip_address() .. random(10000, 99999)
 end
 
 local function _get_post_form(self)
@@ -151,7 +152,7 @@ local function _get_post_args(self)
     return self.post_vars
 end
 
-function new(self, apppath)
+function new(self)
     local res = {
         method           = ngx_var.request_method,
         schema           = ngx_var.schema,
@@ -169,7 +170,6 @@ function new(self, apppath)
         content_type     = ngx_var.content_type,
         content_length   = ngx_var.content_length,
         header           = ngx_header,
-        apppath = apppath,
         tmp_files = {},
         cookie_set = {},
         session_vars = nil,
