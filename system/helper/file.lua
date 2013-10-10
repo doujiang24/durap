@@ -8,22 +8,21 @@ local sub = string.sub
 local insert = table.insert
 
 local get_instance = get_instance
-local setmetatable = setmetatable
-local error = error
 local io_open = io.open
 local type = type
 local concat = table.concat
 local rename = os.rename
 local time = ngx.time
 
-module(...)
+
+local _M = { _VERSION = '0.01' }
 
 
-function tmpname(filename)
+function _M.tmpname(filename)
     return time() .. filename
 end
 
-function move(source, dest)
+function _M.move(source, dest)
     local ok, err = rename(source, dest)
     if not ok then
         log_error('move file err:', err, source, dest)
@@ -31,7 +30,7 @@ function move(source, dest)
     return ok
 end
 
-function exists(f)
+function _M.exists(f)
     local fh, err = io_open(f)
     if fh then
         fh:close()
@@ -40,7 +39,7 @@ function exists(f)
     return nil
 end
 
-function log_file(file, ...)
+function _M.log_file(file, ...)
     local fp, err = io_open(file, "a")
     if not fp then
         local debug = get_instance().debug
@@ -68,7 +67,7 @@ function log_file(file, ...)
     return true
 end
 
-function read_all(filename)
+function _M.read_all(filename)
     local file, err = io_open(filename, "r")
     local data = file and file:read("*a") or nil
     if file then
@@ -77,12 +76,4 @@ function read_all(filename)
     return data
 end
 
-local class_mt = {
-    -- to prevent use of casual module global variables
-    __newindex = function (table, key, val)
-        error('attempt to write to undeclared variable "' .. key .. '"')
-    end
-}
-
-setmetatable(_M, class_mt)
-
+return _M

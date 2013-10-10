@@ -9,15 +9,13 @@ local concat = table.concat
 local type = type
 local regsub = ngx.re.gsub
 
-local setmetatable = setmetatable
-local error = error
 
-module(...)
+local _M = { _VERSION = '0.01' }
 
 
 -- @param pattern The split pattern (I.e. "%s+" to split text by one or more
 -- whitespace characters).
-function split(s, pattern, ret)
+function _M.split(s, pattern, ret)
     if not pattern then pattern = "%s+" end
     if not ret then ret = {} end
     local pos = 1
@@ -34,7 +32,7 @@ function split(s, pattern, ret)
 end
 
 -- @param pattern The pattern to strip from the left-most and right-most of the
-function strip(s, pattern)
+function _M.strip(s, pattern)
     local p = pattern or "%s*"
     local sub_start, sub_end
 
@@ -50,7 +48,7 @@ function strip(s, pattern)
 end
 
 -- to do: not sure allowable_tags work perfect
-function strip_tags(s, allowable_tags)
+function _M.strip_tags(s, allowable_tags)
     local pattern = "</?[^>]+>"
     if allowable_tags and type(allowable_tags) == "table" then
         pattern = "</?+(?!" .. concat(allowable_tags, "|") .. ")([^>]*?)/?>"
@@ -61,7 +59,7 @@ end
 -- Translate certain characters
 -- from can be the table { from = to, from1 = to1 }
 -- s is the utf8 string
-function strtr(s, from, to)
+function _M.strtr(s, from, to)
     local ret = {}
     if type(from) ~= "table" then
         from = { [from] = to }
@@ -76,12 +74,4 @@ function strtr(s, from, to)
     return concat(ret)
 end
 
-local class_mt = {
-    -- to prevent use of casual module global variables
-    __newindex = function (table, key, val)
-        error('attempt to write to undeclared variable "' .. key .. '"')
-    end
-}
-
-setmetatable(_M, class_mt)
-
+return _M

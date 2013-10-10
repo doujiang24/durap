@@ -8,11 +8,11 @@ local utf8_iter = utf8.iter
 local remove = table.remove
 local insert = table.insert
 local pairs = pairs
-local setmetatable = setmetatable
-local error = error
 local sleep = ngx.sleep
 
-module(...)
+
+local _M = { _VERSION = '0.01' }
+
 
 local nonblock = 1000
 local root = ""
@@ -29,7 +29,7 @@ end
 
 -- build: builds the Aho-Corasick data structure from an array of
 -- strings
-function build(m)
+function _M.build(m)
     local t = {}
     make(t, root, root)
 
@@ -102,7 +102,7 @@ end
 -- array of all matches is returned. If all is false then only the
 -- first match is returned.
 -- disturb is the disturn char set, that will be skip in the match
-function match(t, str, disturb, all)
+function _M.match(t, str, disturb, all)
     disturb = disturb or {}
     all = (all == nil) and true or all
 
@@ -145,12 +145,12 @@ end
 -- first match is returned.
 -- disturb is the disturn char set, that will be skip in the match
 -- skip is the num that will skip in two matched char
-function smatch(t, str, disturb, skip)
+function _M.smatch(t, str, disturb, skip)
     disturb = disturb or {}
     skip = skip or 0
 
     if skip == 0 then
-        return match(t, str, disturb)
+        return _M.match(t, str, disturb)
     end
 
     local ret = {}
@@ -202,12 +202,4 @@ function smatch(t, str, disturb, skip)
     return ret
 end
 
-local class_mt = {
-    -- to prevent use of casual module global variables
-    __newindex = function (table, key, val)
-        error('attempt to write to undeclared variable "' .. key .. '"')
-    end
-}
-
-setmetatable(_M, class_mt)
-
+return _M

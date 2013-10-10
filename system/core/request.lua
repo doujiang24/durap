@@ -16,9 +16,7 @@ local read_body = ngx.req.read_body
 local get_headers = ngx.req.get_headers
 local get_uri_args = ngx.req.get_uri_args
 local get_post_args = ngx.req.get_post_args
-local unescape_uri = ngx.unescape_uri
 local pairs = pairs
-local error = error
 local type = type
 local io_open = io.open
 local insert = table.insert
@@ -27,14 +25,13 @@ local sub = string.sub
 local match = string.match
 local find = string.find
 local time = ngx.time
-local pairs = pairs
 local random = math.random
 local get_instance = get_instance
 
 
-module(...)
+local _M = { _VERSION = '0.01' }
 
-_VERSION = '0.01'
+
 local chunk_size = 8096
 
 local mt = { __index = _M }
@@ -52,13 +49,13 @@ local function _get_headers(self)
     return self.headers
 end
 
-function ip_address()
+function _M.ip_address()
     return ngx_var.remote_addr
 end
 
 local function _tmp_name(self)
     local apppath = get_instance().APPPATH
-    return apppath .. "tmp/" .. time() .. ip_address() .. random(10000, 99999)
+    return apppath .. "tmp/" .. time() .. _M.ip_address() .. random(10000, 99999)
 end
 
 local function _get_post_form(self)
@@ -144,7 +141,7 @@ local function _get_post_args(self)
     return self.post_vars
 end
 
-function new(self)
+function _M.new(self)
     local res = {
         method           = ngx_var.request_method,
         schema           = ngx_var.schema,
@@ -171,7 +168,7 @@ function new(self)
     return setmetatable(res, mt)
 end
 
-function get(self, key)
+function _M.get(self, key)
     local get_vars = self.get_vars or _get_uri_args(self)
     if key then
         return get_vars[key]
@@ -179,7 +176,7 @@ function get(self, key)
     return get_vars
 end
 
-function post(self, key)
+function _M.post(self, key)
     local post_vars = self.post_vars or _get_post_args(self)
 
     if key then
@@ -188,10 +185,10 @@ function post(self, key)
     return post_vars
 end
 
-function input(self, key)
+function _M.input(self, key)
     if not self.input_vars then
-        local vars = get(self)
-        local post = post(self)
+        local vars = _M.get(self)
+        local post = _M.post(self)
         for k, v in pairs(post) do
             vars[k] = v
         end
@@ -200,12 +197,4 @@ function input(self, key)
     return self.input_vars
 end
 
-local class_mt = {
-    -- to prevent use of casual module global variables
-    __newindex = function (table, key, val)
-        error('attempt to write to undeclared variable "' .. key .. '"')
-    end
-}
-
-setmetatable(_M, class_mt)
-
+return _M

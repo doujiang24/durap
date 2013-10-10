@@ -8,14 +8,13 @@ local get_instance = get_instance
 local tmerge = tablhelper.merge
 local tslice = tablhelper.slice
 local tonumber = tonumber
-local setmetatable = setmetatable
-local error = error
 local insert = table.insert
 local concat = table.concat
 local ceil = math.ceil
 local site_url = urlhelper.site_url
 
-module(...)
+
+local _M = { _VERSION = '0.01' }
 
 local mt = { __index = _M }
 
@@ -48,12 +47,12 @@ local function _cur_page(conf)
     return 1
 end
 
-function _anchor(conf, page, title)
+local function _anchor(conf, page, title)
     local offset = (page - 1) * conf.per_page
     return '<a href="' .. site_url(conf.base_url) .. "/" .. (offset > 0 and offset or '') .. conf.suffix .. '">' .. title .. "</a>"
 end
 
-function _links(conf)
+local function _links(conf)
     local ret = {}
     if conf.page <= 1 then
         return ''
@@ -105,7 +104,7 @@ function _links(conf)
     return concat(ret, '')
 end
 
-function create_links(conf)
+function _M.create_links(conf)
     local conf = conf and tmerge(default_conf, conf) or default_conf
     conf.page = ceil(conf.total_rows / conf.per_page)
     conf.cur_page = _cur_page(conf)
@@ -113,14 +112,4 @@ function create_links(conf)
     return _links(conf)
 end
 
-
-local class_mt = {
-    __index = get_instance().loader:core('controller'),
-    -- to prevent use of casual module global variables
-    __newindex = function (table, key, val)
-        error('attempt to write to undeclared variable "' .. key .. '"')
-    end
-}
-
-setmetatable(_M, class_mt)
-
+return _M

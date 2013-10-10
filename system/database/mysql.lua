@@ -10,7 +10,6 @@ local setmetatable = setmetatable
 local insert = table.insert
 local concat = table.concat
 local quote_sql_str = ngx.quote_sql_str
-local error = error
 local pairs = pairs
 local strip = strhelper.strip
 local lower = string.lower
@@ -21,9 +20,8 @@ local tonumber = tonumber
 
 local get_instance = get_instance
 
-module(...)
 
-_VERSION = '0.01'
+local _M = { _VERSION = '0.01' }
 
 
 local mt = { __index = _M }
@@ -165,7 +163,7 @@ end
 
 
 -- useful functions
-function connect(self, config)
+function _M.connect(self, config)
     local mysql = setmetatable({ conn = mysql:new(), config = config }, mt)
 
     local conn = mysql.conn
@@ -187,11 +185,11 @@ function connect(self, config)
     end
 
     _reset_vars(mysql)
-    query(mysql, "set names " .. config.charset)
+    _M.query(mysql, "set names " .. config.charset)
     return mysql
 end
 
-function add(self, table, setarr)
+function _M.add(self, table, setarr)
     local keys, values = {}, {}
     for key, val in pairs(setarr) do
         insert(keys, key)
@@ -208,11 +206,11 @@ function add(self, table, setarr)
     }
     local sql = concat(sqlvars, "")
 
-    local res = self:query(sql)
+    local res = _M.query(self, sql)
     return res and res.insert_id
 end
 
-function replace(self, table, setarr)
+function _M.replace(self, table, setarr)
     local keys, values = {}, {}
     for key, val in pairs(setarr) do
         insert(keys, key)
@@ -229,11 +227,11 @@ function replace(self, table, setarr)
     }
     local sql = concat(sqlvars, "")
 
-    local res = self:query(sql)
+    local res = _M.query(self, sql)
     return res and res.insert_id
 end
 
-function count(self, table, wherearr)
+function _M.count(self, table, wherearr)
     local sqlvars = {
         "select count(*) as `num` from `",
         table,
@@ -242,12 +240,12 @@ function count(self, table, wherearr)
     }
     local sql = concat(sqlvars, "")
 
-    local res = self:query(sql)
+    local res = _M.query(self, sql)
     return res and tonumber(res[1].num) or 0
 end
 
-function get(self, table, lmt, offset)
-    local _ = lmt and limit(self, lmt, offset)
+function _M.get(self, table, lmt, offset)
+    local _ = lmt and _M.limit(self, lmt, offset)
     local ar_select, ar_limit, ar_offset = self.ar_select, self.ar_limit, self.ar_offset
 
     local sqlvars = {
@@ -261,23 +259,23 @@ function get(self, table, lmt, offset)
     }
     local sql = concat(sqlvars)
     _reset_vars(self)
-    return query(self, sql)
+    return _M.query(self, sql)
 end
 
-function get_where(self, table, wherearr, limit, offset)
-    where(self, wherearr)
-    return get(self, table, limit, offset)
+function _M.get_where(self, table, wherearr, limit, offset)
+    _M.where(self, wherearr)
+    return _M.get(self, table, limit, offset)
 end
 
-function update(self, table, setarr, wherearr)
+function _M.update(self, table, setarr, wherearr)
     if setarr then
         for k, v in pairs(setarr) do
-            set(self, k, v)
+            _M.set(self, k, v)
         end
     end
     if wherearr then
         for k, v in pairs(wherearr) do
-            where(self, k, v)
+            _M.where(self, k, v)
         end
     end
 
@@ -293,11 +291,11 @@ function update(self, table, setarr, wherearr)
     }
     local sql = concat(sqlvars)
     _reset_vars(self)
-    local res = query(self, sql)
+    local res = _M.query(self, sql)
     return res and true or false, res and res.affected_rows or 0
 end
 
-function delete(self, table, wherearr)
+function _M.delete(self, table, wherearr)
     local ar_limit = self.ar_limit
     local sqlvars = {
         "delete from `",
@@ -308,16 +306,16 @@ function delete(self, table, wherearr)
     }
     local sql = concat(sqlvars)
     _reset_vars(self)
-    local res = query(self, sql)
+    local res = _M.query(self, sql)
     return res and res.affected_rows
 end
 
-function truncate(self, table)
+function _M.truncate(self, table)
     local sql = "truncate table `" ..  table .. "`"
-    return query(self, sql)
+    return _M.query(self, sql)
 end
 
-function query(self, sql)
+function _M.query(self, sql)
     local conn = self.conn
     --log_debug("log sql:", sql)
 
@@ -332,52 +330,52 @@ end
 
 
 -- where functions
-function where(self, key, value, escape)
+function _M.where(self, key, value, escape)
     escape = (escape == nil) and true or escape
     return _where(self, key, value, "and", escape)
 end
 
-function or_where(self, key, value, escape)
+function _M.or_where(self, key, value, escape)
     escape = (escape == nil) and true or escape
     return _where(self, key, value, "or", escape)
 end
 
-function where_in(self, key, values)
+function _M.where_in(self, key, values)
     return _where_in(self, key, values, true, 'and')
 end
 
-function where_not_in(self, key, values)
+function _M.where_not_in(self, key, values)
     return _where_in(self, key, values, false, 'and')
 end
 
-function or_where_in(self, key, values)
+function _M.or_where_in(self, key, values)
     return _where_in(self, key, values, true, 'or')
 end
 
-function or_where_not_in(self, key, values)
+function _M.or_where_not_in(self, key, values)
     return _where_in(self, key, values, false, 'or')
 end
 
-function like(self, key, match)
+function _M.like(self, key, match)
     return _like(self, key, match, true, 'and')
 end
 
-function not_like(self, key, match)
+function _M.not_like(self, key, match)
     return _like(self, key, match, false, 'and')
 end
 
-function or_like(self, key, match)
+function _M.or_like(self, key, match)
     return _like(self, key, match, true, 'or')
 end
 
-function or_not_like(self, key, match)
+function _M.or_not_like(self, key, match)
     return _like(self, key, match, false, 'or')
 end
 -- end where functions
 
 
 -- select functions
-function select(self, key, escape)
+function _M.select(self, key, escape)
     escape = (escape == nil) and true or escape
     local ar_select = self.ar_select
     if escape then
@@ -387,50 +385,50 @@ function select(self, key, escape)
     return self
 end
 
-function select_max(self, key, alias)
+function _M.select_max(self, key, alias)
     return _select_func(self, key, alias, "max")
 end
 
-function select_min(self, key, alias)
+function _M.select_min(self, key, alias)
     return _select_func(self, key, alias, "min")
 end
 
-function select_avg(self, key, alias)
+function _M.select_avg(self, key, alias)
     return _select_func(self, key, alias, "avg")
 end
 
-function select_sum(self, key, alias)
+function _M.select_sum(self, key, alias)
     return _select_func(self, key, alias, "sum")
 end
 
-function select_count(self, key, alias)
+function _M.select_count(self, key, alias)
     return _select_func(self, key, alias, "count")
 end
 -- end select function
 
 
 -- group by function
-function group_by(self, key)
+function _M.group_by(self, key)
     self.ar_group_by = key
     return self
 end
 
-function having(self, condition)
+function _M.having(self, condition)
     return _having(self, condition, "and")
 end
 
-function or_having(self, condition)
+function _M.or_having(self, condition)
     return _having(self, condition, "or")
 end
 -- end group by function
 
-function limit(self, limit, offset)
+function _M.limit(self, limit, offset)
     self.ar_limit = limit
     self.ar_offset = offset or 0
     return self
 end
 
-function set(self, key, value, escape)
+function _M.set(self, key, value, escape)
     escape = (escape == nil) and true or escape
     local ar_set = self.ar_set
 
@@ -443,7 +441,7 @@ function set(self, key, value, escape)
     return self
 end
 
-function order_by(self, key, order)
+function _M.order_by(self, key, order)
     order = order or "desc"
     local ar_order_by = self.ar_order_by
 
@@ -452,11 +450,11 @@ function order_by(self, key, order)
     return self
 end
 
-function first_row(self, res)
+function _M.first_row(self, res)
     return res and res[1] or nil
 end
 
-function close(self)
+function _M.close(self)
     local conn = self.conn
     local ok, err = conn:close()
     if not ok then
@@ -464,7 +462,7 @@ function close(self)
     end
 end
 
-function keepalive(self)
+function _M.keepalive(self)
     local conn, config = self.conn, self.config
     if not config.idle_timeout or not config.max_keepalive then
         log_error("not set idle_timeout and max_keepalive in config; turn to close")
@@ -477,12 +475,4 @@ function keepalive(self)
     end
 end
 
-local class_mt = {
-    -- to prevent use of casual module global variables
-    __newindex = function (table, key, val)
-        error('attempt to write to undeclared variable "' .. key .. '"')
-    end
-}
-
-setmetatable(_M, class_mt)
-
+return _M

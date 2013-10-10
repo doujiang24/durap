@@ -5,9 +5,6 @@ local filehelper = require "helper.file"
 local ltp = require "library.ltp.template"
 
 local setmetatable = setmetatable
-local getmetatable = getmetatable
-local rawget = rawget
-local error = error
 local pcall = pcall
 local assert = assert
 local loadfile = loadfile
@@ -21,23 +18,19 @@ local fread_all = filehelper.read_all
 local ltp_load_template = ltp.load_template
 local ltp_execute_template = ltp.execute_template
 
-local say = ngx.say
-local exit = ngx.exit
-
 local _G = _G
 
 
-module(...)
-
-_VERSION = '0.01'
+local _M = { _VERSION = '0.01' }
 
 
 local mt = { __index = _M }
 
+
 local cache_module = {}
 
 
-function new(self)
+function _M.new(self)
     local dp = get_instance()
     local res = {
         appname = dp.APPNAME,
@@ -74,33 +67,33 @@ local function _load_module(self, name, force)
     return cache
 end
 
-function core(self, cr, force)
+function _M.core(self, cr, force)
     local module = "core/" .. cr
     return _load_module(self, module, force)
 end
 
-function controller(self, contro, force)
+function _M.controller(self, contro, force)
     local module = "controller/" .. contro
     return _load_module(self, module, force)
 end
 
-function model(self, mod, force)
+function _M.model(self, mod, force)
     local module = "model/" .. mod
     local m = _load_module(self, module, force)
     return m and type(m.new) == "function" and m:new() or m
 end
 
-function config(self, conf, force)
+function _M.config(self, conf, force)
     local module = "config/" .. conf
     return _load_module(self, module, force)
 end
 
-function library(self, conf, force)
+function _M.library(self, conf, force)
     local module = "library/" .. conf
     return _load_module(self, module, force)
 end
 
-function _ltp_function(self, tpl, force)
+function _M._ltp_function(self, tpl, force)
     local cache = _get_cache(self, tpl)
     if force or cache == nil then
         local tplfun = false
@@ -117,14 +110,13 @@ function _ltp_function(self, tpl, force)
     return cache
 end
 
-function view(self, tpl, data, force)
+function _M.view(self, tpl, data, force)
     local template, data = "views/" .. tpl, data or {}
-    local tplfun = _ltp_function(self, template, force)
+    local tplfun = _M._ltp_function(self, template, force)
     local output = {}
     setmetatable(data, { __index = _G })
     ltp_execute_template(tplfun, data, output)
     return output
 end
 
-setmetatable(_M, class_mt)
-
+return _M

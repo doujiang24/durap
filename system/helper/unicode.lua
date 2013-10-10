@@ -15,13 +15,12 @@ local h2dec = numhepler.h2dec
 local regmatch = ngx.re.gmatch
 local regsub = ngx.re.gsub
 
-local setmetatable = setmetatable
-local error = error
 
-module(...)
+local _M = { _VERSION = '0.01' }
+
 
 -- unicode num to utf8 (char is a num or num string)
-function u2utf8(char)
+function _M.u2utf8(char)
     local ret = {}
     local num = tonumber(char)
     if num < 0x80 then
@@ -42,22 +41,14 @@ function u2utf8(char)
     return concat(ret)
 end
 
-function str_u2utf8(str)
+function _M.str_u2utf8(str)
     local ret = str
     for m in regmatch(str, '&#([xX]?)([0-9a-fA-F]{2,7})(;?)', "u") do
         local s, x, dec = m[0], m[1], m[2]
         dec = (x ~= "") and h2dec(dec) or dec
-        ret = regsub(ret, s, u2utf8(dec))
+        ret = regsub(ret, s, _M.u2utf8(dec))
     end
     return ret
 end
 
-local class_mt = {
-    -- to prevent use of casual module global variables
-    __newindex = function (table, key, val)
-        error('attempt to write to undeclared variable "' .. key .. '"')
-    end
-}
-
-setmetatable(_M, class_mt)
-
+return _M

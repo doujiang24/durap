@@ -7,19 +7,17 @@ local request = require "core.request"
 local loader = require "core.loader"
 local debug = require "core.debug"
 local session = require "core.session"
-local cookie = require "core.cookie"
 
-local getmetatable = getmetatable
 local setmetatable = setmetatable
-local rawget = rawget
 local get_instance = get_instance
 
 
-module(...)
+local _M = { _VERSION = '0.01' }
+
 
 local mt = { __index = _M }
 
-function init(self, level)
+function _M.init(self, level)
     local APPNAME = ngx_var.APPNAME
     local APPPATH = ngx_var.ROOT .. ngx_var.APPNAME .. "/"
 
@@ -52,12 +50,9 @@ local function _auto_load(table, key)
 end
 
 local class_mt = {
-    __index = _auto_load,
-    -- to prevent use of casual module global variables
-    __newindex = function (table, key, val)
-        error('attempt to write to undeclared variable "' .. key .. '"')
-    end
+    __index = _auto_load
 }
 
 setmetatable(_M, class_mt)
 
+return _M

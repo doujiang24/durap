@@ -4,10 +4,9 @@ local concat = table.concat
 local type = type
 local sub = string.sub
 
-local setmetatable = setmetatable
-local error = error
 
-module(...)
+local _M = { _VERSION = '0.01' }
+
 
 local h2d = {
     ['0'] = 0,
@@ -35,7 +34,7 @@ local h2d = {
 }
 
 -- hex to decimal (hex is a string, return a number)
-function h2dec(hex)
+function _M.h2dec(hex)
     local len = #hex
     local ret = 0
     for i = 1, len do
@@ -45,12 +44,4 @@ function h2dec(hex)
     return ret
 end
 
-local class_mt = {
-    -- to prevent use of casual module global variables
-    __newindex = function (table, key, val)
-        error('attempt to write to undeclared variable "' .. key .. '"')
-    end
-}
-
-setmetatable(_M, class_mt)
-
+return _M

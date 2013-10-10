@@ -6,7 +6,6 @@ local cookielib = require "core.cookie"
 local aes = require "resty.aes"
 
 local setmetatable = setmetatable
-local error = error
 local tonumber = tonumber
 local type = type
 local log_error = corehelper.log_error
@@ -22,10 +21,8 @@ local set_encode_base64 = ndk.set_var.set_encode_base64
 local set_decode_base64 = ndk.set_var.set_decode_base64
 
 
-module(...)
+local _M = { _VERSION = '0.01' }
 
-
-_VERSION = '0.01'
 
 local def_sess_secure_key = "abcdefghigklmnopqrstuvwxyz123456"
 local def_sess_secure_iv = "abcefghigklmnopq"
@@ -54,7 +51,7 @@ local function _get_session(self)
     return sess
 end
 
-function init(self)
+function _M.init(self)
     local conf = get_instance().loader:config('core')
     local sess_secure_key = conf.sess_secure_key or def_sess_secure_key
     local sess_secure_iv = conf.sess_secure_iv or def_sess_secure_iv
@@ -70,7 +67,7 @@ function init(self)
     }, mt)
 end
 
-function get(self, key)
+function _M.get(self, key)
     local sess = self.session_vars or _get_session(self)
     if key then
         return sess[key]
@@ -78,8 +75,8 @@ function get(self, key)
     return sess
 end
 
-function set(self, key, value)
-    local sess = get(self)
+function _M.set(self, key, value)
+    local sess = _M.get(self)
 
     sess[key] = value
     sess.__expire_time = time() + self.expire_time
@@ -90,12 +87,4 @@ function set(self, key, value)
     set_cookie(self.sess_cookie_key, str, nil, '/', ngx_var.host)
 end
 
-local class_mt = {
-    -- to prevent use of casual module global variables
-    __newindex = function (table, key, val)
-        error('attempt to write to undeclared variable "' .. key .. '"')
-    end
-}
-
-setmetatable(_M, class_mt)
-
+return _M

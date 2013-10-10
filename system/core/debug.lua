@@ -17,13 +17,14 @@ local ngx_log = ngx.log
 local ngx_err = ngx.ERR
 
 
-module(...)
+local _M = { _VERSION = '0.01' }
 
-DEBUG = 1
-INFO = 2
-NOTICE = 3
-WARN = 4
-ERR = 5
+
+_M.DEBUG = 1
+_M.INFO = 2
+_M.NOTICE = 3
+_M.WARN = 4
+_M.ERR = 5
 
 local level_str = {
     'DEBUG',
@@ -35,7 +36,7 @@ local level_str = {
 
 local mt = { __index = _M }
 
-function init(self)
+function _M.init(self)
     local dp = get_instance()
     local loader, apppath = dp.loader, dp.APPPATH
     local conf = loader:config('core')
@@ -66,7 +67,7 @@ local function _log(self, log)
     fp:close()
 end
 
-function log(self, log_level, ...)
+function _M.log(self, log_level, ...)
     local level = self.log_level
     if log_level < level then
         return
@@ -94,20 +95,12 @@ function log(self, log_level, ...)
     return _log(self, concat(log_vars, ", "))
 end
 
-function vtype(self, val)
-    return log(self, DEBUG, "vtype:", type(val))
+function _M.vtype(self, val)
+    return _M.log(self, _M.DEBUG, "vtype:", type(val))
 end
 
-function json(self, val)
-    return log(self, DEBUG, "json:", cjson.encode(val))
+function _M.json(self, val)
+    return _M.log(self, _M.DEBUG, "json:", cjson.encode(val))
 end
 
-local class_mt = {
-    -- to prevent use of casual module global variables
-    __newindex = function (table, key, val)
-        error('attempt to write to undeclared variable "' .. key .. '"')
-    end
-}
-
-setmetatable(_M, class_mt)
-
+return _M

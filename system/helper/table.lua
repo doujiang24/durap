@@ -1,15 +1,14 @@
 -- Copyright (C) 2013 doujiang24 @ MaMa, Inc.
 
-local setmetatable = setmetatable
-local error = error
 local pairs = pairs
 local insert = table.insert
 local type = type
 
-module(...)
+
+local _M = { _VERSION = '0.01' }
 
 
-function filter(tbl, func)
+function _M.filter(tbl, func)
     local ret = {}
     for k, v in pairs(tbl) do
         if not func(v) then
@@ -19,7 +18,7 @@ function filter(tbl, func)
     return ret
 end
 
-function in_tbl(value, tbl)
+function _M.in_tbl(value, tbl)
     for _k, v in pairs(tbl) do
         if v == value then
             return true
@@ -28,7 +27,7 @@ function in_tbl(value, tbl)
     return nil
 end
 
-function copy(tbl)
+function _M.copy(tbl)
     local ret = {}
     for k, v in pairs(tbl) do
         ret[k] = v
@@ -37,10 +36,10 @@ function copy(tbl)
 end
 
 -- append: append tbl2 to tbl1 when is true; default nil
-function merge(tbl1, tbl2, append)
+function _M.merge(tbl1, tbl2, append)
     local ret = tbl1
     if not append then
-        ret = copy(tbl1)
+        ret = _M.copy(tbl1)
     end
 
     for k, v in pairs(tbl2) do
@@ -53,7 +52,7 @@ function merge(tbl1, tbl2, append)
     return ret
 end
 
-function slice(tbl, offset, length)
+function _M.slice(tbl, offset, length)
     local ret = {}
     local fend = length and ((offset + length) <= #tbl) and (offset + length - 1) or #tbl
     for i = offset, fend, 1 do
@@ -62,12 +61,4 @@ function slice(tbl, offset, length)
     return ret
 end
 
-local class_mt = {
-    -- to prevent use of casual module global variables
-    __newindex = function (table, key, val)
-        error('attempt to write to undeclared variable "' .. key .. '"')
-    end
-}
-
-setmetatable(_M, class_mt)
-
+return _M

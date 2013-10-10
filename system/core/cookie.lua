@@ -2,32 +2,26 @@
 
 local corehelper = require "helper.core"
 
-local setmetatable = setmetatable
-local error = error
 local type = type
 local insert = table.insert
 local concat = table.concat
 local log_error = corehelper.log_error
-local get_instance = get_instance
 local ngx = ngx
 local ngx_var = ngx.var
-local time = ngx.time
-local ngx_var = ngx.var
 local ngx_header = ngx.header
+local cookie_time = ngx.cookie_time
 
 
-module(...)
-
-_VERSION = '0.01'
+local _M = { _VERSION = '0.01' }
 
 
-function get(key)
+function _M.get(key)
     if key then
         return ngx_var["cookie_" .. key]
     end
 end
 
-function set(key, value, expire, path, domain, secure, httponly)
+function _M.set(key, value, expire, path, domain, secure, httponly)
     local cookie = {}
     insert(cookie, key .. "=" .. value)
     if expire then
@@ -64,12 +58,4 @@ function set(key, value, expire, path, domain, secure, httponly)
     return true
 end
 
-local class_mt = {
-    -- to prevent use of casual module global variables
-    __newindex = function (table, key, val)
-        error('attempt to write to undeclared variable "' .. key .. '"')
-    end
-}
-
-setmetatable(_M, class_mt)
-
+return _M

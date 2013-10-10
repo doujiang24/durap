@@ -5,19 +5,17 @@ local corehelper = require "helper.core"
 
 local log_error = corehelper.log_error
 local setmetatable = setmetatable
-local error = error
 local unpack = unpack
 local get_instance = get_instance
+local insert = table.insert
 
 
-module(...)
-
-_VERSION = '0.01'
+local _M = { _VERSION = '0.01' }
 
 
 local mt = { __index = _M }
 
-function connect(self, config)
+function _M.connect(self, config)
     local red = setmetatable({ conn = redis:new(), config = config }, mt);
 
     local conn = red.conn
@@ -33,10 +31,18 @@ function connect(self, config)
         return
     end
 
+    if config.password then
+        local res, err = red:auth(config.password)
+        if not res then
+            log_error("failed to authenticate: ", err)
+            return
+        end
+    end
+
     return red
 end
 
-function close(self)
+function _M.close(self)
     local conn = self.conn
     local ok, err = conn:close()
     if not ok then
@@ -44,7 +50,7 @@ function close(self)
     end
 end
 
-function keepalive(self)
+function _M.keepalive(self)
     local conn, config = self.conn, self.config
     if not config.idle_timeout or not config.max_keepalive then
         log_error("not set idle_timeout and max_keepalive in config; turn to close")
@@ -56,7 +62,7 @@ function keepalive(self)
     end
 end
 
-function commit_pipeline(self)
+function _M.commit_pipeline(self)
     local conn, ret = self.conn, {}
     local results, err = conn:commit_pipeline()
 
@@ -82,11 +88,6 @@ function commit_pipeline(self)
 end
 
 local class_mt = {
-    -- to prevent use of casual module global variables
-    __newindex = function (table, key, val)
-        error('attempt to write to undeclared variable "' .. key .. '"')
-    end,
-    -- to call resty.redis
     __index = function (table, key)
         return function (self, ...)
             local conn = self.conn
@@ -103,3 +104,4 @@ local class_mt = {
 
 setmetatable(_M, class_mt)
 
+return _M

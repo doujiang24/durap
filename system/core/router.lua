@@ -7,7 +7,6 @@ local corehelper = require "helper.core"
 local get_instance = get_instance
 
 local setmetatable = setmetatable
-local error = error
 local concat = table.concat
 local type = type
 local unpack = unpack
@@ -18,7 +17,8 @@ local insert = table.insert
 local log_error = corehelper.log_error
 
 
-module(...)
+local _M = { _VERSION = '0.01' }
+
 
 local max_level = 2
 local default_func = "index"
@@ -28,7 +28,7 @@ local default_ctr = "index"
 
 local mt = { __index = _M }
 
-function get_segments(self)
+function _M.get_segments(self)
     if not self.segments then
         local str = self.uri
         self.segments = split(strip(str, "/"), "/")
@@ -36,7 +36,7 @@ function get_segments(self)
     return self.segments
 end
 
-function new(self)
+function _M.new(self)
     local dp = get_instance()
 
     return setmetatable({
@@ -47,9 +47,9 @@ function new(self)
     }, mt)
 end
 
-function route(self)
+function _M.route(self)
     local loader = self.loader
-    local segments = get_segments(self)
+    local segments = _M.get_segments(self)
     local default_ctr = loader:config('core').default_ctr or default_ctr
 
     if #segments == 0 then
@@ -77,17 +77,9 @@ function route(self)
     return nil
 end
 
-function get_uri(self)
-    local segments = self.segments
+function _M.get_uri(self)
+    local segments = _M.get_segments(self)
     return concat(segments, "/")
 end
 
-local class_mt = {
-    -- to prevent use of casual module global variables
-    __newindex = function (table, key, val)
-        error('attempt to write to undeclared variable "' .. key .. '"')
-    end
-}
-
-setmetatable(_M, class_mt)
-
+return _M
