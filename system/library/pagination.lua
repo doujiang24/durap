@@ -16,7 +16,6 @@ local site_url = urlhelper.site_url
 
 local _M = { _VERSION = '0.01' }
 
-local mt = { __index = _M }
 
 local default_conf = {
     base_url = '',
