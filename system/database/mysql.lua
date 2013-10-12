@@ -466,7 +466,7 @@ function _M.keepalive(self)
     local conn, config = self.conn, self.config
     if not config.idle_timeout or not config.max_keepalive then
         log_error("not set idle_timeout and max_keepalive in config; turn to close")
-        return close(self)
+        return _M.close(self)
     end
 
     local ok, err = conn:set_keepalive(config.idle_timeout, config.max_keepalive)
