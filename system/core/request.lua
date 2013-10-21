@@ -194,7 +194,11 @@ function _M.input(self, key)
         end
         self.input_vars = vars
     end
-    return self.input_vars
+    if key then
+        return self.input_vars[key]
+    else
+        return self.input_vars
+    end
 end
 
 return _M

@@ -5,7 +5,7 @@ local get_instance = get_instance
 local say = ngx.say
 local exit = ngx.exit
 local HTTP_INTERNAL_SERVER_ERROR = ngx.HTTP_INTERNAL_SERVER_ERROR
-local HTTP_NOT_FOUND = ngx.HTTP_NOT_FOUND
+local HTTP_OK = ngx.HTTP_OK
 
 
 local _M = { _VERSION = '0.01' }
@@ -15,7 +15,7 @@ function _M.show_error(err_msg, ...)
     local debug = get_instance().debug
     debug:log(debug.ERR, err_msg, ...)
     say(err_msg)
-    exit(HTTP_INTERNAL_SERVER_ERROR)
+    exit(HTTP_OK)
 end
 
 function _M.show_404(msg, ...)
