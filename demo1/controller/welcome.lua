@@ -1,10 +1,9 @@
 -- Copyright (C) 2013 MaMa
 
-local dp = get_instance()
 local cjson = require "cjson"
 
-local loader = dp.loader
 local ngx = ngx
+local get_instance = get_instance
 local type = type
 local setmetatable = setmetatable
 local tonumber = tonumber
@@ -17,8 +16,8 @@ function hello(name)
 end
 
 function database()
-    local MWelcome = loader:model('welcome')
-    local welcome = MWelcome:new()
+    local loader = get_instance().loader
+    local welcome = loader:model('welcome')
 
     local res = welcome:create()
     if res then
@@ -40,8 +39,8 @@ function database()
 end
 
 function redis(name)
-    local Mredis = loader:model('redis')
-    local redis = Mredis:new()
+    local loader = get_instance().loader
+    local redis = loader:model('redis')
 
     local res = redis:add(name)
     if res then

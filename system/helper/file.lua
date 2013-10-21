@@ -12,6 +12,7 @@ local io_open = io.open
 local type = type
 local concat = table.concat
 local rename = os.rename
+local remove = os.remove
 local time = ngx.time
 
 
@@ -37,6 +38,14 @@ function _M.exists(f)
         return true
     end
     return nil
+end
+
+function _M.remove(f)
+    local ok, err = remove(f)
+    if not ok then
+        log_error("remove file: ", f, "; error: ", err)
+    end
+    return ok
 end
 
 function _M.log_file(file, ...)

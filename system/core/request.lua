@@ -1,6 +1,7 @@
 -- Copyright (C) 2013 doujiang24 @ MaMa, Inc.
 
 local corehelper = require "helper.core"
+local filehelper = require "helper.file"
 local cjson = require "cjson"
 local upload = require "resty.upload"
 
@@ -27,6 +28,8 @@ local find = string.find
 local time = ngx.time
 local random = math.random
 local get_instance = get_instance
+local file_exists = filehelper.exists
+local file_remove = filehelper.remove
 
 
 local _M = { _VERSION = '0.01' }
@@ -56,6 +59,15 @@ end
 local function _tmp_name(self)
     local apppath = get_instance().APPPATH
     return apppath .. "tmp/" .. time() .. _M.ip_address() .. random(10000, 99999)
+end
+
+local function _clear(self)
+    local tmp_files = self.tmp_files
+    for _, file in ipairs(tmp_files) do
+        if file_exists(file) then
+            file_remove(file)
+        end
+    end
 end
 
 local function _get_post_form(self)

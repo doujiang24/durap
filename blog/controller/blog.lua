@@ -2,6 +2,7 @@
 
 local urlhelper = require "helper.url"
 local filehelper = require "helper.file"
+local imagelib = require "library.image"
 
 local get_instance = get_instance
 local setmetatable = setmetatable
@@ -89,7 +90,11 @@ function image()
     local filename, err
     if inputs.upload and inputs.upload.filename then
         filename = "/images/" .. ftmpname(inputs.upload.filename)
-        if not move(inputs.upload.tmpname, dp.APPPATH .. "static" .. filename) then
+        local fullpath = dp.APPPATH .. "static" .. filename
+
+        if imagelib.thumb(inputs.upload.tmpname, fullpath, 600, 500) then
+            imagelib.text_watermark(fullpath, 'free blog')
+        else
             filename, err = nil, 'upload error'
         end
     end
