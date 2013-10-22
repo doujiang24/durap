@@ -1,4 +1,4 @@
--- Copyright (C) 2013 doujiang24 @ MaMa, Inc.
+-- Copyright (C) 2013 doujiang24, MaMa Inc.
 
 local pairs = pairs
 local insert = table.insert

@@ -1,4 +1,4 @@
--- Copyright (C) 2013 doujiang24 @ MaMa, Inc.
+-- Copyright (C) 2013 doujiang24, MaMa Inc.
 
 local strhelper = require "helper.string"
 local tblhelper = require "helper.table"
@@ -50,7 +50,8 @@ end
 function _M.route(self)
     local loader = self.loader
     local segments = _M.get_segments(self)
-    local default_ctr = loader:config('core').default_ctr or default_ctr
+    local conf = loader:config('core')
+    local default_ctr = conf and conf.default_ctr or default_ctr
 
     if #segments == 0 then
         insert(segments, default_ctr)

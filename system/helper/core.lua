@@ -1,4 +1,4 @@
--- Copyright (C) 2013 doujiang24 @ MaMa, Inc.
+-- Copyright (C) 2013 doujiang24, MaMa Inc.
 
 local get_instance = get_instance
 
@@ -6,6 +6,7 @@ local say = ngx.say
 local exit = ngx.exit
 local HTTP_INTERNAL_SERVER_ERROR = ngx.HTTP_INTERNAL_SERVER_ERROR
 local HTTP_OK = ngx.HTTP_OK
+local HTTP_NOT_FOUND = ngx.HTTP_NOT_FOUND
 
 
 local _M = { _VERSION = '0.01' }

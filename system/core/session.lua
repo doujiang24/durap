@@ -1,4 +1,4 @@
--- Copyright (C) 2013 doujiang24 @ MaMa, Inc.
+-- Copyright (C) 2013 doujiang24, MaMa Inc.
 
 local cjson = require "cjson"
 local corehelper = require "helper.core"

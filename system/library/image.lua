@@ -1,4 +1,5 @@
--- Copyright (C) 2013 doujiang24 @ MaMa, Inc.
+-- Copyright (C) 2013 doujiang24, MaMa Inc.
+-- this library based on lua-gd, install first : https://github.com/ittner/lua-gd
 
 local gd = require "gd"
 local corehelper = require "helper.core"
