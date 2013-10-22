@@ -64,7 +64,7 @@ function _M.text_watermark(source, text, position)
     local srcImg, srcTyp = _loadimg(source)
     local srcW, srcH = srcImg:sizeXY()
 
-    local color = srcImg:colorAllocate(0, 0, 0)
+    local color = gd.createTrueColor(1, 1):colorAllocate(0, 0, 0)
     local angle = 0
     local len = strlen(text)
     local ptsize = srcH > def_ptsize * 2 and def_ptsize or math_floor(srcH / 2)
