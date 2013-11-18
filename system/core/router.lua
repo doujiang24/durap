@@ -10,6 +10,8 @@ local setmetatable = setmetatable
 local concat = table.concat
 local type = type
 local unpack = unpack
+local re_find = ngx.re.find
+local str_sub = string.sub
 local strip = strhelper.strip
 local split = strhelper.split
 local slice = tblhelper.slice
@@ -31,6 +33,11 @@ local mt = { __index = _M }
 function _M.get_segments(self)
     if not self.segments then
         local str = self.uri
+        local from, to, err = re_find(str, "\\?", "jo")
+        if from then
+            str = str_sub(str, 1, from - 1)
+        end
+
         self.segments = split(strip(str, "/"), "/")
     end
     return self.segments

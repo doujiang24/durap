@@ -45,13 +45,6 @@ local function _get_uri_args(self)
     return self.get_vars
 end
 
-local function _get_headers(self)
-    if not self.headers then
-        self.headers = get_headers()
-    end
-    return self.headers
-end
-
 function _M.ip_address()
     return ngx_var.remote_addr
 end
@@ -142,8 +135,8 @@ end
 local function _get_post_args(self)
     self.post_vars = {}
     if self.method == "POST" then
-        local headers = _get_headers(self)
-        if headers['Content-Type'] and sub(headers['Content-Type'], 1, 19) == "multipart/form-data" then
+        local typ = _M.headers(self, 'Content-Type')
+        if typ and sub(typ, 1, 19) == "multipart/form-data" then
             self.post_vars = _get_post_form(self)
         else
             read_body()
@@ -175,9 +168,20 @@ function _M.new(self)
         get_vars = nil,
         post_vars = nil,
         input_vars = nil,
-        headers = nil
+        header_vars = nil
     }
     return setmetatable(res, mt)
+end
+
+function _M.headers(self, key)
+    if not self.header_vars then
+        self.header_vars = get_headers()
+    end
+    if key then
+        return self.header_vars[key]
+    else
+        return self.header_vars
+    end
 end
 
 function _M.get(self, key)

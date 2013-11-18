@@ -10,6 +10,8 @@ local ngx = ngx
 local ngx_var = ngx.var
 local ngx_header = ngx.header
 local cookie_time = ngx.cookie_time
+local escape_uri = ngx.escape_uri
+local unescape_uri = ngx.unescape_uri
 
 
 local _M = { _VERSION = '0.01' }
@@ -17,13 +19,14 @@ local _M = { _VERSION = '0.01' }
 
 function _M.get(key)
     if key then
-        return ngx_var["cookie_" .. key]
+        local str = ngx_var["cookie_" .. key]
+        return str and unescape_uri(str)
     end
 end
 
 function _M.set(key, value, expire, path, domain, secure, httponly)
     local cookie = {}
-    insert(cookie, key .. "=" .. value)
+    insert(cookie, key .. "=" .. escape_uri(value))
     if expire then
         insert(cookie, "expires=" .. cookie_time(expire))
     end

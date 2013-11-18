@@ -59,7 +59,6 @@ local function _links(conf)
 
     insert(ret, conf.full_tag_open)
 
-    get_instance().debug:json(conf)
     if conf.cur_page > 1 then
         insert(ret, _anchor(conf, conf.cur_page - 1, conf.prev_link))
         insert(ret, _anchor(conf, 1, '1'))

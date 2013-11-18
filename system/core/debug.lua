@@ -12,6 +12,7 @@ local unpack = unpack
 local time = ngx.localtime
 local type = type
 local get_instance = get_instance
+local maxn = table.maxn
 
 local ngx_log = ngx.log
 local ngx_err = ngx.ERR
@@ -74,11 +75,13 @@ function _M.log(self, log_level, ...)
     end
 
     local args = { ... }
-    for i = 1, #args do
+    for i = 1, maxn(args) do
         if args[i] == nil then
             args[i] = "nil"
         elseif type(args[i]) == "table" then
             args[i] = "is a table"
+        elseif type(args[i]) == "boolean" then
+            args[i] = args[i] and "boolean(true)" or "boolean(false)"
         end
     end
 

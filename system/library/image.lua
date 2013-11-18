@@ -12,11 +12,20 @@ local math_max = math.max
 local math_floor = math.floor
 local strlen = string.len
 local io_open = io.open
+local math_random = math.random
+local math_pi = math.pi
 local log_error = corehelper.log_error
 
 
 local _M = { _VERSION = '0.01' }
 
+local rand_font = ngx.var.ROOT .. "system/library/upcel.ttf"
+
+local im = gd.createTrueColor(100, 100)
+local white = im:colorAllocate(244, 244, 244)
+local rand_colors = { im:colorAllocate(240, 36, 36), im:colorAllocate(36, 240, 36), im:colorAllocate(36, 36, 240), }
+
+local rand_codes = { '2', '3', '4', '5', '6', '7', '8', '9', 'b', 'c', 'd', 'f', 'g', 'h', 'j', 'k', 'm', 'n', 'p', 'q', 'r', 's', 't', 'v', 'w', 'x', 'y', 'z', }
 
 local magics = {
     { "\137PNG", "createFromPng", "png" },
@@ -133,6 +142,25 @@ function _M.thumb(source, destination, max_width, max_height)
     img:copyResized(srcImg, 0, 0, 0, 0, dstW, dstH, srcW, srcH)
 
     return _save(img, srcTyp, destination)
+end
+
+function _M.randcode()
+    local ptsize, width, height, code = 40, 100, 40, ''
+
+    local img = gd.createTrueColor(width, height)
+    img:filledRectangle(0, 0, width, height, white)
+
+    for i = 1, 4 do
+        local char = rand_codes[math_random(#rand_codes)]
+        local color = rand_colors[math_random(#rand_colors)]
+        local angle = math_random() / math_pi
+
+        img:stringFT(color, rand_font, ptsize, angle, 5 + (i-1) * 25, 30, char)
+
+        code = code .. char
+    end
+
+    return code, img
 end
 
 return _M
