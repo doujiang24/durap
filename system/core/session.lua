@@ -21,10 +21,13 @@ local set_cookie = cookielib.set
 local get_cookie = cookielib.get
 local set_encode_base64 = ndk.set_var.set_encode_base64
 local set_decode_base64 = ndk.set_var.set_decode_base64
+local pcall = pcall
 
 
 local _M = { _VERSION = '0.01' }
 
+
+local cookie_sess_expire_time = 86400 * 400
 
 local def_sess_secure_key = "abcdefghigklmnopqrstuvwxyz123456"
 local def_sess_secure_iv = "abcefghigklmnopq"
@@ -40,7 +43,8 @@ local function _get_session(self, str, tolerate_expt)
     local str = str or get_cookie(self.sess_cookie_key)
     if str then
         local aes256 = self.aes256
-        sess = json_decode(aes256:decrypt(set_decode_base64(str)))
+        local ok, bin = pcall(set_decode_base64, str)
+        sess = json_decode(aes256:decrypt(ok and bin or '') or '""')
 
         if not sess or type(sess) ~= "table" then
             log_error('failed to decode session, session_str:', str)
@@ -89,7 +93,7 @@ function _M.set(self, key, value)
     local aes256 = self.aes256
     local str = set_encode_base64(aes256:encrypt(json_encode(sess)))
 
-    set_cookie(self.sess_cookie_key, str, nil, '/', self.domain)
+    set_cookie(self.sess_cookie_key, str, cookie_sess_expire_time, '/', self.domain)
 end
 
 function _M.expt(self, expire_time)

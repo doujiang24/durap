@@ -1,12 +1,27 @@
+Name
+====
+
 Durap
-This is lua web framework based on ngx-openresty.
+It is lua web framework based on ngx-openresty.
+
+
+Status
+======
+
 Now it just works!
 
-__VERSION = 0.01
 
-DEMO
+
+A BLOG DEMO
+======
+
 http://blog.qinxunw.com
 
+
+
+
+Description
+===========
 简要介绍
 1. 基本实现了 MVC 的小框架，CodeIgniter（PHP） Like。支持多 APP，每个 APP 为一个目录，APP 之间相互独立
 
@@ -23,10 +38,13 @@ http://blog.qinxunw.com
 
 7. controller：app/controller 目录下存放当前 APP 的 controller
 
-9. loader：用来装在 APP 里的 module（controller，model，config，library，view），支持 lua_code_cache
+9. loader：用来装在 APP 里的 module（controller，model，config，library，view），支持缓存
 
 10. index.lua：框架的统一入口
 
 
+
 License
+====
+
 This software is distributed under Apache License Version 2.0, see file LICENSE or http://www.apache.org/licenses/LICENSE-2.0

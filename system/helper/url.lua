@@ -1,6 +1,5 @@
 -- Copyright (C) 2013 doujiang24, MaMa Inc.
 
-local http = require "resty.http"
 local ngx_header = ngx.header
 
 local get_instance = get_instance
@@ -55,12 +54,17 @@ function _M.url_domain(url)
         return nil, "url_domain bad arg type, not string"
     end
 
-    local m, err = http:parse_uri(url)
+    local m, err = re_match(url, [[^(http[s]*)://([^:/]+)(?::(\d+))?(.*)]], "jo")
 
     if m then
-        return m[2], nil
+        return m[2]
+
+    elseif err then
+        return nil, "failed to match the uri: " .. err
+
     end
-    return nil, err
+
+    return nil, "bad uri"
 end
 
 return _M
