@@ -8,7 +8,8 @@ It is lua web framework based on ngx-openresty.
 Status
 ======
 
-Now it just works!
+Now it is still experimental and under early development.
+And it powerd some app online.
 
 
 
