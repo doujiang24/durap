@@ -52,50 +52,46 @@ local function _set_cache(self, name, val)
     cache_module[appname][name] = val
 end
 
-local function _load_module(self, name, force)
-    local cache = _get_cache(self, name)
-    if force or cache == nil then
+local function _load_module(self, dir, name)
+    local file = dir .. "/" .. name
+    local cache = _get_cache(self, file)
+    if cache == nil then
         local module = false
-        local filename = concat({ self.apppath, name, ".lua" })
+        local filename = concat({ self.apppath, file, ".lua" })
         if fexists(filename) then
             module = setmetatable({}, { __index = _G })
             assert(pcall(setfenv(assert(loadfile(filename)), module)))
         end
-        _set_cache(self, name, module)
+        _set_cache(self, file, module)
         return module
     end
     return cache
 end
 
-function _M.core(self, cr, force)
-    local module = "core/" .. cr
-    return _load_module(self, module, force)
+function _M.core(self, cr)
+    return _load_module(self, "core", cr)
 end
 
-function _M.controller(self, contro, force)
-    local module = "controller/" .. contro
-    return _load_module(self, module, force)
+function _M.controller(self, contr)
+    return _load_module(self, "controller", contr)
 end
 
-function _M.model(self, mod, force)
-    local module = "model/" .. mod
-    local m = _load_module(self, module, force)
-    return m and type(m.new) == "function" and m:new() or m
+function _M.model(self, mod, ...)
+    local m = _load_module(self, "model", mod)
+    return m and type(m.new) == "function" and m:new(...) or m
 end
 
-function _M.config(self, conf, force)
-    local module = "config/" .. conf
-    return _load_module(self, module, force)
+function _M.config(self, conf)
+    return _load_module(self, "config", conf)
 end
 
-function _M.library(self, conf, force)
-    local module = "library/" .. conf
-    return _load_module(self, module, force)
+function _M.library(self, lib)
+    return _load_module(self, "library", lib)
 end
 
-function _M._ltp_function(self, tpl, force)
+local function _ltp_function(self, tpl)
     local cache = _get_cache(self, tpl)
-    if force or cache == nil then
+    if cache == nil then
         local tplfun = false
         local filename = concat({ self.apppath, tpl, ".tpl" })
         if fexists(filename) then
@@ -110,9 +106,9 @@ function _M._ltp_function(self, tpl, force)
     return cache
 end
 
-function _M.view(self, tpl, data, force)
-    local template, data = "views/" .. tpl, data or {}
-    local tplfun = _M._ltp_function(self, template, force)
+function _M.view(self, tpl, data)
+    local template, data = "views/" .. tpl .. ".tpl", data or {}
+    local tplfun = _ltp_function(self, template)
     local output = {}
     setmetatable(data, { __index = _G })
     ltp_execute_template(tplfun, data, output)

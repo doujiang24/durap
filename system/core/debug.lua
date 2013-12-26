@@ -14,6 +14,7 @@ local type = type
 local get_instance = get_instance
 local maxn = table.maxn
 
+local ngx_var = ngx.var
 local ngx_log = ngx.log
 local ngx_err = ngx.ERR
 
@@ -76,34 +77,38 @@ function _M.log(self, log_level, ...)
 
     local args = { ... }
     for i = 1, maxn(args) do
-        if args[i] == nil then
-            args[i] = "nil"
-        elseif type(args[i]) == "table" then
-            args[i] = "is a table"
-        elseif type(args[i]) == "boolean" then
-            args[i] = args[i] and "boolean(true)" or "boolean(false)"
+        local typ = type(args[i])
+        if typ == "table" then
+            local ok, json_str = pcall(cjson.encode, args[i])
+            json_str = ok and json_str or "[ERROR can not json encode table]"
+            args[i] = "[TABLE]:" .. json_str
+
+        elseif typ == "nil" then
+            args[i] = "[NIL]"
+
+        elseif typ == "boolean" then
+            args[i] = args[i] and "[BOOLEAN]:true" or "[BOOLEAN]:false"
+
+        elseif typ == "number" then
+            args[i] = "[NUMBER]:" .. args[i]
+
+        elseif typ ~= "string" then
+            args[i] = "[" .. typ .. " VALUE]"
         end
     end
 
-    local request = get_instance().request
     local log_vars = {
         time(),
-        "host: " .. request.host,
-        "request: " .. request.request_uri,
         concat(args, ", "),
         traceback(),
-        "\n"
+        "host: " .. ngx_var.host,
+        "request: " .. ngx_var.request_uri,
+        "args: " .. (ngx_var.args or '(empty)'),
+        "request_body: " .. (ngx_var.request_body or '(empty)'),
+        "\n",
     }
 
     return _log(self, concat(log_vars, ", "))
-end
-
-function _M.vtype(self, val)
-    return _M.log(self, _M.DEBUG, "vtype:", type(val))
-end
-
-function _M.json(self, val)
-    return _M.log(self, _M.DEBUG, "json:", cjson.encode(val))
 end
 
 return _M
