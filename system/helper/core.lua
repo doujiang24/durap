@@ -27,13 +27,11 @@ function _M.show_404(msg, ...)
 end
 
 function _M.log_debug(...)
-    local debug = get_instance().debug
-    return debug:log(debug.DEBUG, ...)
+    return get_instance().debug:log_debug(...)
 end
 
 function _M.log_error(...)
-    local debug = get_instance().debug
-    return debug:log(debug.ERR, ...)
+    return get_instance().debug:log_error(...)
 end
 
 return _M

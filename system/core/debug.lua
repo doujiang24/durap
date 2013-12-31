@@ -98,8 +98,8 @@ function _M.log(self, log_level, ...)
     end
 
     local log_vars = {
-        time(),
-        concat(args, ", "),
+        time() .. ", " .. level_str[log_level],
+        concat(args, ", \n"),
         traceback(),
         "host: " .. ngx_var.host,
         "request: " .. ngx_var.request_uri,
@@ -108,7 +108,27 @@ function _M.log(self, log_level, ...)
         "\n",
     }
 
-    return _log(self, concat(log_vars, ", "))
+    return _log(self, concat(log_vars, ", \n"))
+end
+
+function _M.log_debug(self, ...)
+    return _M.log(self, _M.DEBUG, ...)
+end
+
+function _M.log_info(self, ...)
+    return _M.log(self, _M.INFO, ...)
+end
+
+function _M.log_notice(self, ...)
+    return _M.log(self, _M.NOTICE, ...)
+end
+
+function _M.log_warn(self, ...)
+    return _M.log(self, _M.WARN, ...)
+end
+
+function _M.log_error(self, ...)
+    return _M.log(self, _M.ERR, ...)
 end
 
 return _M
