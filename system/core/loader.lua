@@ -93,7 +93,7 @@ local function _ltp_function(self, tpl)
     local cache = _get_cache(self, tpl)
     if cache == nil then
         local tplfun = false
-        local filename = concat({ self.apppath, tpl, ".tpl" })
+        local filename = self.apppath .. tpl
         if fexists(filename) then
             local fdata = fread_all(filename)
             tplfun = ltp_load_template(fdata, '<?lua','?>')
