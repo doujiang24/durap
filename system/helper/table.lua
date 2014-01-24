@@ -61,4 +61,24 @@ function _M.slice(tbl, offset, length)
     return ret
 end
 
+function _M.keys(tbl)
+    local ret = {}
+
+    for k, _v in pairs(tbl) do
+        ret[#ret + 1] = k
+    end
+
+    return ret
+end
+
+function _M.values(tbl, key)
+    local ret = {}
+
+    for _k, v in pairs(tbl) do
+        ret[#ret + 1] = key and v[key] or v
+    end
+
+    return ret
+end
+
 return _M

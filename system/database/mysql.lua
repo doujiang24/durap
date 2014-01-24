@@ -134,21 +134,6 @@ local function _select_func(self, key, alias, func)
     return self
 end
 
-local function _gen_where_sql(self)
-    local ar_where = self.ar_where
-    local ar_group_by = self.ar_group_by
-    local ar_having = self.ar_having
-    local ar_order_by = self.ar_order_by
-
-    local sqlvars = {
-        (#ar_where >= 1) and (" where " .. concat(ar_where, " ")) or "",
-        ar_group_by and (" group by " .. ar_group_by) or "",
-        (#ar_having >= 1) and (" having " .. concat(ar_having, " ")) or "",
-        (#ar_order_by >= 1) and (" order by " .. concat(ar_order_by, ", ")) or ""
-    }
-    return concat(sqlvars)
-end
-
 local function _reset_vars(self)
     self.ar_select = {}
     self.ar_set = {}
@@ -158,6 +143,26 @@ local function _reset_vars(self)
     self.ar_group_by = nil
     self.ar_limit = nil
     self.ar_offset = nil
+end
+
+function _M.where_export(self, op)
+    local sqlvars = {
+        (#self.ar_where >= 1) and concat(self.ar_where, " ") or " 1 ",
+        self.ar_group_by and (" group by " .. self.ar_group_by) or "",
+        (#self.ar_having >= 1) and (" having " .. concat(self.ar_having, " ")) or "",
+        (#self.ar_order_by >= 1) and (" order by " .. concat(self.ar_order_by, ", ")) or ""
+    }
+
+    if self.ar_limit then
+        if op == "update" then
+            sqlvars[#sqlvars + 1] = " limit " .. self.ar_limit
+        else
+            sqlvars[#sqlvars + 1] = " limit " .. self.ar_offset .. ", " .. self.ar_limit
+        end
+    end
+
+    _reset_vars(self)
+    return concat(sqlvars)
 end
 -- end local functions
 
@@ -184,7 +189,6 @@ function _M.connect(self, config)
         return
     end
 
-    _reset_vars(mysql)
     _M.query(mysql, "set names " .. config.charset)
     return mysql
 end
@@ -206,8 +210,8 @@ function _M.add(self, table, setarr)
     }
     local sql = concat(sqlvars, "")
 
-    local res = _M.query(self, sql)
-    return res and res.insert_id
+    local res, err = _M.query(self, sql)
+    return res and res.insert_id, err
 end
 
 function _M.replace(self, table, setarr)
@@ -227,38 +231,36 @@ function _M.replace(self, table, setarr)
     }
     local sql = concat(sqlvars, "")
 
-    local res = _M.query(self, sql)
-    return res and res.insert_id
+    local res, err = _M.query(self, sql)
+    return res and res.insert_id, err
 end
 
 function _M.count(self, table, wherearr)
     local sqlvars = {
-        "select count(*) as `num` from `",
+        "SELECT COUNT(*) AS `num` FROM `",
         table,
-        "` ",
-        _gen_where_sql(self)
+        "` WHERE ",
+        _M.where_export(self)
     }
     local sql = concat(sqlvars, "")
 
-    local res = _M.query(self, sql)
-    return res and tonumber(res[1].num) or 0
+    local res, err = _M.query(self, sql)
+    return res and tonumber(res[1].num), err
 end
 
 function _M.get(self, table, lmt, offset)
     local _ = lmt and _M.limit(self, lmt, offset)
-    local ar_select, ar_limit, ar_offset = self.ar_select, self.ar_limit, self.ar_offset
+    local ar_select = self.ar_select
 
     local sqlvars = {
         "select ",
         (#ar_select >= 1) and concat(ar_select, ", ") or "*",
         " from `",
         table,
-        "` ",
-        _gen_where_sql(self),
-        ar_limit and (" limit " .. ar_offset .. ", " .. ar_limit) or ""
+        "` where ",
+        _M.where_export(self),
     }
     local sql = concat(sqlvars)
-    _reset_vars(self)
     return _M.query(self, sql)
 end
 
@@ -279,35 +281,30 @@ function _M.update(self, table, setarr, wherearr)
         end
     end
 
-    local ar_set, ar_limit = self.ar_set, self.ar_limit
     local sqlvars = {
         "update `",
         table,
         "` ",
         " set ",
-        concat(ar_set, ", "),
-        _gen_where_sql(self),
-        ar_limit and (" limit " .. ar_limit) or ""
+        concat(self.ar_set, ", "),
+        " where ",
+        _M.where_export(self, "update"),
     }
     local sql = concat(sqlvars)
-    _reset_vars(self)
-    local res = _M.query(self, sql)
-    return res and true or false, res and res.affected_rows or 0
+    local res, err = _M.query(self, sql)
+    return res and res.affected_rows, err
 end
 
 function _M.delete(self, table, wherearr)
-    local ar_limit = self.ar_limit
     local sqlvars = {
         "delete from `",
         table,
-        "` ",
-        _gen_where_sql(self),
-        ar_limit and (" limit " .. ar_limit) or ""
+        "` where ",
+        _M.where_export(self, "update"),
     }
     local sql = concat(sqlvars)
-    _reset_vars(self)
-    local res = _M.query(self, sql)
-    return res and res.affected_rows
+    local res, err = _M.query(self, sql)
+    return res and res.affected_rows, err
 end
 
 function _M.truncate(self, table)
@@ -317,14 +314,15 @@ end
 
 function _M.query(self, sql)
     local conn = self.conn
-    --log_debug("log sql:", sql)
+    log_debug("log sql:", sql)
 
     local res, err, errno, sqlstate = conn:query(sql)
     if not res then
         log_error("bad result: ", err, ": ", errno, ": ", sqlstate, ": sql:", sql, ": ", ".")
     end
 
-    return res
+    _reset_vars(self)
+    return res, err
 end
 -- end useful functions
 

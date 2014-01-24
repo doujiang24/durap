@@ -4,6 +4,7 @@ local redis = require "resty.redis"
 local corehelper = require "helper.core"
 
 local log_error = corehelper.log_error
+local log_debug = corehelper.log_debug
 local setmetatable = setmetatable
 local unpack = unpack
 local get_instance = get_instance
@@ -80,8 +81,7 @@ function _M.commit_pipeline(self)
                 insert(ret, res[1])
             end
         else
-            insert(ret, false)
-            log_error("cannot hander the scalar value, command :", i, res)
+            insert(ret, res)
         end
     end
     return ret
@@ -94,7 +94,13 @@ local class_mt = {
             local res, err = conn[key](conn, ...)
             if not res and err then
                 local args = { ... }
-                log_error("failed to query redis, error:", err, "operater:", key, unpack(args))
+
+                if "read_reply" == key and "timeout" == err then
+                    --log_debug("failed to query redis, error:", err, "operater:", key, unpack(args))
+                else
+                    log_error("failed to query redis, error:", err, "operater:", key, unpack(args))
+                end
+
                 return false
             end
             return res
