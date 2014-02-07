@@ -57,7 +57,7 @@ local function _load_module(self, dir, name)
     local cache = _get_cache(self, file)
     if cache == nil then
         local module = false
-        local filename = concat({ self.apppath, file, ".lua" })
+        local filename = self.apppath .. file .. ".lua"
         if fexists(filename) then
             module = setmetatable({}, { __index = _G })
             assert(pcall(setfenv(assert(loadfile(filename)), module)))

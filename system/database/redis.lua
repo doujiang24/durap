@@ -101,7 +101,7 @@ local class_mt = {
                     log_error("failed to query redis, error:", err, "operater:", key, unpack(args))
                 end
 
-                return false
+                return false, err
             end
             return res
         end

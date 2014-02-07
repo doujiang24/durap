@@ -14,6 +14,7 @@ local type = type
 local get_instance = get_instance
 local maxn = table.maxn
 
+local get_phase = ngx.get_phase
 local ngx_var = ngx.var
 local ngx_log = ngx.log
 local ngx_err = ngx.ERR
@@ -40,14 +41,13 @@ local mt = { __index = _M }
 
 function _M.init(self)
     local dp = get_instance()
-    local loader, apppath = dp.loader, dp.APPPATH
-    local conf = loader:config('core')
+    local conf = dp.loader:config('core')
     local debug_level = conf and conf.debug or 'DEBUG'
     local log_level = self[debug_level]
 
     return setmetatable({
         log_level = log_level,
-        log_file = apppath .. "logs/error.log"
+        log_file = dp.APPPATH .. "logs/error.log"
     }, mt)
 end
 
@@ -60,7 +60,7 @@ local function _log(self, log)
         return
     end
 
-    local ok, err = fp:write(log, "\n")
+    local ok, err = fp:write(log, "\n\n")
     if not ok then
         ngx_log(ngx_err, "failed to write log file, log: ", log)
         return
@@ -101,14 +101,22 @@ function _M.log(self, log_level, ...)
         time() .. ", " .. level_str[log_level],
         concat(args, ", \n"),
         traceback(),
-        "host: " .. ngx_var.host,
-        "request: " .. ngx_var.request_uri,
-        "args: " .. (ngx_var.args or '(empty)'),
-        "request_body: " .. (ngx_var.request_body or '(empty)'),
-        "\n",
     }
 
-    return _log(self, concat(log_vars, ", \n"))
+    local phase = get_phase()
+
+    local request_info = "\nphase: " .. phase
+    if "init" ~= phase and "timer" ~= get_phase() then
+        request_info = concat({
+            request_info,
+            "host: " .. ngx_var.host,
+            "request: " .. ngx_var.request_uri,
+            "args: " .. (ngx_var.args or '(empty)'),
+            "request_body: " .. (ngx_var.request_body or '(empty)'),
+        }, ", \n")
+    end
+
+    return _log(self, concat(log_vars, ", \n") .. request_info)
 end
 
 function _M.log_debug(self, ...)

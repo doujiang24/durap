@@ -20,6 +20,7 @@ my $pwd = cwd();
 our $HttpConfig = qq{
     resolver \$TEST_NGINX_RESOLVER;
     lua_package_path "$pwd/system/?.lua;;";
+    init_by_lua_file "$pwd/init.lua";
 };
 
 $ENV{TEST_NGINX_RESOLVER} = '8.8.8.8';
