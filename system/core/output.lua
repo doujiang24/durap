@@ -6,9 +6,19 @@ local get_instance = get_instance
 local say = ngx.say
 local exit = ngx.exit
 local json_encode = cjson.encode
+local ngx = ngx
 
 
 local _M = { _VERSION = '0.01' }
+
+function _M.set_header(key, val)
+    if not ngx.headers_sent then
+        ngx.header[key] = val
+        return true
+    end
+
+    get_instance().debug:log_error('headers has been sent, when set_header, key:', key, 'val:', val)
+end
 
 local function encode(status, data, errmsg, errno, extra, ...)
     local ret = {
