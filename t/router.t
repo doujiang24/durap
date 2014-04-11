@@ -10,7 +10,7 @@ BEGIN {
 use Test::Nginx::Socket @skip;
 use Cwd qw(cwd);
 
-repeat_each(5);
+repeat_each(1);
 #repeat_each(10);
 
 plan tests => repeat_each() * (3 * blocks());
@@ -76,7 +76,7 @@ count num match list count.' . "\n"
 [error]
 
 
-=== TEST 3: test mysql
+=== TEST 3: test redis
 --- http_config eval: $::HttpConfig
 --- config
     location / {

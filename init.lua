@@ -1,4 +1,4 @@
--- Copyright (C) 2013 MaMa
+-- Copyright (C) Dejiang Zhu (doujiang24)
 
 
 local r_G = _G
