@@ -1,4 +1,4 @@
-# vim:set ft= ts=4 sw=4 et:
+# vim:set ft=perl ts=4 sw=4 et:
 
 my @skip;
 BEGIN {
@@ -34,6 +34,7 @@ $ENV{TEST_NGINX_ROOT_PATH} ||= "$pwd/";
 #no_long_string();
 #no_diff();
 no_shuffle();
+no_root_location();
 
 run_tests();
 
@@ -42,15 +43,14 @@ __DATA__
 === TEST 1: test router
 --- http_config eval: $::HttpConfig
 --- config
-    location /t {
-        set $router_uri "/welcome/hello/dou";
+    location / {
         set $APPNAME "demo1";
         set $ROOT "$TEST_NGINX_ROOT_PATH";
 
         content_by_lua_file "$TEST_NGINX_ROOT_PATHindex.lua";
     }
 --- request
-GET /t
+GET /welcome/hello/dou
 --- response_body eval
 'say hello, dou.' . "\n"
 --- no_error_log
@@ -60,15 +60,14 @@ GET /t
 === TEST 2: test mysql
 --- http_config eval: $::HttpConfig
 --- config
-    location /t {
-        set $router_uri "/welcome/database";
+    location / {
         set $APPNAME "demo1";
         set $ROOT "$TEST_NGINX_ROOT_PATH";
 
         content_by_lua_file "$TEST_NGINX_ROOT_PATHindex.lua";
     }
 --- request
-GET /t
+GET /welcome/database
 --- response_body eval
 'table welcome created.
 new one added.
@@ -80,15 +79,14 @@ count num match list count.' . "\n"
 === TEST 3: test mysql
 --- http_config eval: $::HttpConfig
 --- config
-    location /t {
-        set $router_uri "/welcome/redis/dou";
+    location / {
         set $APPNAME "demo1";
         set $ROOT "$TEST_NGINX_ROOT_PATH";
 
         content_by_lua_file "$TEST_NGINX_ROOT_PATHindex.lua";
     }
 --- request
-GET /t
+GET /welcome/redis/dou
 --- response_body eval
 'add success
 get success
