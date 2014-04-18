@@ -1,12 +1,8 @@
 -- Copyright (C) Dejiang Zhu (doujiang24)
 
 
-local r_G = _G
-local mt = getmetatable(r_G)
-if mt then
-    r_G = rawget(mt, "__index")
-end
+require "resty.core"
 
-r_G.get_instance = function ()
+get_instance = function ()
     return ngx.ctx.dp
 end
