@@ -1,19 +1,17 @@
 -- Copyright (C) Dejiang Zhu (doujiang24)
 
 local cjson = require "cjson"
-local urlhelper = require "helper.url"
-local pagination = require "library.pagination"
+local urlhelper = require "system.helper.url"
+local pagination = require "system.library.pagination"
 
 local get_instance = get_instance
-local setmetatable = setmetatable
-local error = error
 local tonumber = tonumber
 local say = ngx.say
 local redirect = urlhelper.redirect
 
-local _M = getfenv()
+local _M = {}
 
-function _get_user()
+local function _get_user()
     local dp = get_instance()
     if dp.user == nil then
         local loader, session, user = dp.loader, dp.session, false
@@ -28,8 +26,9 @@ function _get_user()
     end
     return dp.user
 end
+_M._get_user = _get_user
 
-function _require_user()
+function _M._require_user()
     local user = _get_user()
     if not user then
         redirect('user/login')
@@ -37,7 +36,7 @@ function _require_user()
     return user
 end
 
-function _show(page, data)
+function _M._show(page, data)
     local dp = get_instance()
     local loader, router = dp.loader, dp.router
     data = data or {}
@@ -48,14 +47,14 @@ function _show(page, data)
     say(loader:view('page', data))
 end
 
-function _template(page, data)
+function _M._template(page, data)
     local dp = get_instance()
     local loader = dp.loader
     data = data or {}
     say(loader:view(page, data))
 end
 
-function _pagination(uri, total, size)
+function _M._pagination(uri, total, size)
     local config = {
         base_url = uri,
         total_rows = total,
@@ -64,12 +63,4 @@ function _pagination(uri, total, size)
     return pagination.create_links(config)
 end
 
-local class_mt = {
-    -- to prevent use of casual module global variables
-    __newindex = function (table, key, val)
-        error('attempt to write to undeclared variable "' .. key .. '"')
-    end
-}
-
-setmetatable(_M, class_mt)
-
+return _M

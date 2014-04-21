@@ -1,15 +1,14 @@
 -- Copyright (C) Dejiang Zhu (doujiang24)
 
-local urlhelper = require "helper.url"
+local urlhelper = require "system.helper.url"
 
 local get_instance = get_instance
-local setmetatable = setmetatable
-local error = error
 local redirect = urlhelper.redirect
+local _show = get_instance().loader:core('controller')._show
 
-local _M = getfenv()
+local _M = {}
 
-function register()
+function _M.register()
     local dp = get_instance()
     local loader, request, session = dp.loader, dp.request, dp.session
     local posts = request:post()
@@ -31,7 +30,7 @@ function register()
     _show('register', data)
 end
 
-function login()
+function _M.login()
     local dp = get_instance()
     local loader, request, session = dp.loader, dp.request, dp.session
     local posts = request:post()
@@ -54,19 +53,10 @@ function login()
     end
 end
 
-function logout()
+function _M.logout()
     local session = get_instance().session
     session:set('uid', nil)
     redirect('')
 end
 
-local class_mt = {
-    __index = get_instance().loader:core('controller'),
-    -- to prevent use of casual module global variables
-    __newindex = function (table, key, val)
-        error('attempt to write to undeclared variable "' .. key .. '"')
-    end
-}
-
-setmetatable(_M, class_mt)
-
+return _M

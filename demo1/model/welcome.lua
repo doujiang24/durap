@@ -1,6 +1,6 @@
 -- Copyright (C) Dejiang Zhu (doujiang24)
 
-local mysql = require "database.mysql"
+local mysql = require "system.database.mysql"
 
 local setmetatable = setmetatable
 local error = error
@@ -16,16 +16,16 @@ _VERSION = '0.01'
 -- constants
 local db_table = "welcome"
 
-local _M = getfenv()
+local _M =  {}
 local mt = { __index = _M }
 
-function new(self)
+function _M.new(self)
     local dp = get_instance()
     local config = dp.loader:config('mysql')
     return setmetatable({ mysql = mysql:connect(config) }, mt)
 end
 
-function create(self)
+function _M.create(self)
     local mysql = self.mysql
     local sql = [[
         DROP TABLE IF EXISTS `welcome`;
@@ -42,7 +42,7 @@ function create(self)
     return mysql:query(sql)
 end
 
-function add(self, name)
+function _M.add(self, name)
     local mysql = self.mysql
     local setarr = {
         name = name,
@@ -51,27 +51,19 @@ function add(self, name)
     return mysql:add(db_table, setarr)
 end
 
-function count(self)
+function _M.count(self)
     local mysql = self.mysql
     return mysql:count(db_table)
 end
 
-function list(self)
+function _M.list(self)
     local mysql = self.mysql
     return mysql:select("name"):where("name", "dou"):order_by("dateline", 'DESC'):get(db_table)
 end
 
-function keepalive(self)
+function _M.keepalive(self)
     local mysql = self.mysql
     return mysql:keepalive()
 end
 
-local class_mt = {
-    -- to prevent use of casual module global variables
-    __newindex = function (table, key, val)
-        error('attempt to write to undeclared variable "' .. key .. '"')
-    end
-}
-
-setmetatable(_M, class_mt)
-
+return _M

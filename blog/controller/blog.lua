@@ -1,26 +1,21 @@
 -- Copyright (C) Dejiang Zhu (doujiang24)
 
-local urlhelper = require "helper.url"
-local filehelper = require "helper.file"
-local imagelib = require "library.image"
+local urlhelper = require "system.helper.url"
+local imagelib = require "system.library.image"
 
 local get_instance = get_instance
-local setmetatable = setmetatable
-local error = error
 local redirect = urlhelper.redirect
 local ipairs = ipairs
 local insert = table.insert
 local ngx = ngx
-local ftmpname = filehelper.tmpname
-local move = filehelper.move
+local _show = get_instance().loader:core('controller')._show
+local _require_user = get_instance().loader:core('controller')._require_user
+local _template = get_instance().loader:core('controller')._template
+local _pagination = get_instance().loader:core('controller')._pagination
 
-local _M = getfenv()
+local _M = {}
 
-function index()
-    return lists()
-end
-
-function view(id)
+function _M.view(id)
     local dp = get_instance()
     local loader = dp.loader
 
@@ -66,8 +61,13 @@ function lists(start)
     local data = { lists = res, recents = recents, page = page }
     _show('lists', data)
 end
+_M.lists = lists
 
-function publish()
+function _M.index()
+    return lists()
+end
+
+function _M.publish()
     local user = _require_user()
 
     local dp = get_instance()
@@ -82,18 +82,21 @@ function publish()
     _show('publish')
 end
 
-function image()
+function _M.image()
     local dp = get_instance()
     local loader, request = dp.loader, dp.request
+    request:set_save_files(dp.APPPATH .. "static/images/")
     local inputs = request:input()
 
     local filename, err
-    if inputs.upload and inputs.upload.filename then
-        filename = "/images/" .. ftmpname(inputs.upload.filename)
-        local fullpath = dp.APPPATH .. "static" .. filename
+    if inputs.upload and inputs.upload.savename then
+        local base_dir = dp.APPPATH .. "static/images/"
+        local savename = inputs.upload.savename
+        filename = "/images/thumb_" .. savename
+        local thumbname = dp.APPPATH .. "static" .. filename
 
-        if imagelib.thumb(inputs.upload.tmpname, fullpath, 600, 500) then
-            imagelib.text_watermark(fullpath, 'free blog')
+        if imagelib.thumb(base_dir .. savename, thumbname, 600, 500) then
+            imagelib.text_watermark(thumbname, 'free blog')
         else
             filename, err = nil, 'upload error'
         end
@@ -103,13 +106,4 @@ function image()
     _template('image', data)
 end
 
-local class_mt = {
-    __index = get_instance().loader:core('controller'),
-    -- to prevent use of casual module global variables
-    __newindex = function (table, key, val)
-        error('attempt to write to undeclared variable "' .. key .. '"')
-    end
-}
-
-setmetatable(_M, class_mt)
-
+return _M

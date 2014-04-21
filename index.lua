@@ -1,6 +1,6 @@
 -- Copyright (C) Dejiang Zhu (doujiang24)
 
-local durap = require "core.durap"
+local durap = require "system.core.durap"
 
 
 local dp = durap:init()

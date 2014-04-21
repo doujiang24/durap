@@ -1,13 +1,11 @@
 -- Copyright (C) Dejiang Zhu (doujiang24)
 
-local mysql = require "database.mysql"
-local tblhelper = require "helper.table"
+local mysql = require "system.database.mysql"
+local tblhelper = require "system.helper.table"
 local resty_radom = require "resty.random"
 local resty_str = require "resty.string"
-local corehelper = require "helper.core"
+local corehelper = require "system.helper.core"
 
-local setmetatable = setmetatable
-local error = error
 local get_instance = get_instance
 local in_tbl = tblhelper.in_tbl
 local md5 = ngx.md5
@@ -20,7 +18,7 @@ _VERSION = '0.01'
 local db_table = "users"
 
 
-local _M = getfenv()
+local _M = {}
 local mt = { __index = _M }
 
 local function _salt()
@@ -32,13 +30,13 @@ local function _password(password, salt)
     return md5(md5(password) .. salt)
 end
 
-function new(self)
+function _M.new(self)
     local dp = get_instance()
     local config = dp.loader:config('mysql')
     return setmetatable({ mysql = mysql:connect(config) }, mt)
 end
 
-function add(self, username, password)
+function _M.add(self, username, password)
     local mysql = self.mysql
 
     if not username and not password then
@@ -58,15 +56,16 @@ function add(self, username, password)
 end
 
 -- key is uid or username; default uid
-function get(self, value, key)
+local function get(self, value, key)
     key = key == "username" and key or "uid"
     local mysql = self.mysql
 
     mysql:where(key, value):where('status', 1)
     return mysql:first_row(mysql:get(db_table)) or false
 end
+_M.get = get
 
-function login(self, username, password)
+function _M.login(self, username, password)
     local mysql = self.mysql
 
     local user = get(self, username, 'username')
@@ -74,17 +73,9 @@ function login(self, username, password)
         user or false
 end
 
-function close(self)
+function _M.close(self)
     local mysql = self.mysql
     return mysql:keepalive()
 end
 
-local class_mt = {
-    -- to prevent use of casual module global variables
-    __newindex = function (table, key, val)
-        error('attempt to write to undeclared variable "' .. key .. '"')
-    end
-}
-
-setmetatable(_M, class_mt)
-
+return _M

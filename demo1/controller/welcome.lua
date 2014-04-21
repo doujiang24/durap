@@ -9,13 +9,13 @@ local setmetatable = setmetatable
 local tonumber = tonumber
 local error = error
 
-local _M = getfenv()
+local _M = {}
 
-function hello(name)
+function _M.hello(name)
     ngx.say('say hello, ', name, ".")
 end
 
-function database()
+function _M.database()
     local loader = get_instance().loader
     local welcome = loader:model('welcome')
 
@@ -38,7 +38,7 @@ function database()
     end
 end
 
-function redis(name)
+function _M.redis(name)
     local loader = get_instance().loader
     local redis = loader:model('redis')
 
@@ -59,12 +59,4 @@ function redis(name)
     end
 end
 
-local class_mt = {
-    -- to prevent use of casual module global variables
-    __newindex = function (table, key, val)
-        error('attempt to write to undeclared variable "' .. key .. '"')
-    end
-}
-
-setmetatable(_M, class_mt)
-
+return _M
