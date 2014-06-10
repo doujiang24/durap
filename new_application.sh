@@ -16,7 +16,8 @@ git submodule update --init system
 
 git checkout -b local
 
-rm blog demo README.markdown -rf
+rm blog demo1 README.markdown -rf
+rm .git system/.git -rf
 
 
 mkdir -p $app/controller
@@ -31,3 +32,4 @@ cp system/lua-releng $app/
 touch $app/logs/error.log
 chmod a+w $app/logs/error.log
 
+rm new_application.sh -f
