@@ -2,38 +2,41 @@
 
 local redis = require "system.database.redis"
 
-local setmetatable = setmetatable
-local error = error
-local time = ngx.localtime
-local get_instance = get_instance
+local setmetatable  = setmetatable
+local get_instance  = get_instance
+local time          = ngx.localtime
 
 
 -- constants
-local key = "welcome"
+local config    = get_instance().loader:config('redis')
+local key       = "welcome"
 
 local _M = {}
 local mt = { __index = _M }
 
 function _M.new(self)
-    local dp = get_instance()
-    local config = dp.loader:config('redis')
-    return setmetatable({ redis = redis:connect(config) }, mt)
+    local red = redis:connect(config)
+
+    if red then
+        return setmetatable({ red = red }, mt)
+    end
 end
 
 function _M.add(self, name)
-    local redis = self.redis
-    return redis:set(key, name)
+    local red = self.red
+    return red:set(key, name)
 end
 
 function _M.get(self)
-    local redis = self.redis
-    return redis:get(key)
+    local red = self.red
+    return red:get(key)
 end
 
-function _M.keepalive(self)
-    local redis = self.redis
-    return redis:keepalive()
+function _M.close(self)
+    local red = self.red
+    return red:keepalive()
 end
 
 
 return _M
+
