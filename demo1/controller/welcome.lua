@@ -4,6 +4,7 @@ local get_instance  = get_instance
 local type          = type
 local tonumber      = tonumber
 local ngx_say       = ngx.say
+local print         = print
 
 
 local _M = {}
@@ -60,6 +61,10 @@ function _M.redis(name)
     if res == name then
         ngx_say('get match the add')
     end
+end
+
+function _M.statistics()
+    print('background run')
 end
 
 return _M
