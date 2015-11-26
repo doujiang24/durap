@@ -11,14 +11,9 @@ Status
 Now it is still experimental and under early development.
 And it powerd some app online.
 
+NOTICE: This project is not maintained anymore and is not recommended for production environments.
 
-
-A BLOG DEMO
-======
-
-http://blog.qinxunw.com
-
-
+注意：由于工作内容略有变更，时间也有限，这个项目一直没有持续更新，并不推荐大家使用 :)
 
 
 Description
@@ -30,7 +25,7 @@ Description
 
 3. t 目录为测试集，由 test-nginx 驱动，测试 demo1 APP 的功能，需要完成 database，redis 初始化支持
 
-4. blog 目录为相对完整 APP，在线地址： http://blog.qinxunw.com
+4. blog 目录为相对完整 APP
 
 5. router：自动路由，规则类似 CI，根据 ngx.var.router_uri 来映射 app/controller 目录下的 module，router_uri 类似 uri，在 nginx.conf 里赋值
 
